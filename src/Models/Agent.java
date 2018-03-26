@@ -11,6 +11,7 @@ public class Agent {
     private Agent fiance;
     private Agent spouse;
     private Agent interest;
+    private ArrayList<Agent> preference;
 
     public Agent(String name, int x, int y) {
         this.name = name;
@@ -72,6 +73,14 @@ public class Agent {
 
     public void setInterest(Agent interest) {
         this.interest = interest;
+    }
+
+    public ArrayList<Agent> getPreference() {
+        return preference;
+    }
+
+    public void setPreference(ArrayList<Agent> preference) {
+        this.preference = preference;
     }
 
     public Registry locateNearestRegistry(Matrix matrix){
