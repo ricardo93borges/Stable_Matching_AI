@@ -45,4 +45,8 @@ public class Couple {
     public void setY(int y) {
         this.y = y;
     }
+
+    public String getName(){
+        return this.maleAgent.getName()+this.femaleAgent.getName();
+    }
 }

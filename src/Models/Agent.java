@@ -8,15 +8,17 @@ public class Agent {
     private int x;
     private int y;
     private int intention;
+    private int gender;
     private Agent fiance;
     private Agent spouse;
     private Agent interest;
     private ArrayList<Agent> preference;
 
-    public Agent(String name, int x, int y) {
+    public Agent(String name, int x, int y, int gender) {
         this.name = name;
         this.x = x;
         this.y = y;
+        this.gender = gender;
     }
 
     public String getName() {
@@ -41,6 +43,14 @@ public class Agent {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 
     public int getIntention() {

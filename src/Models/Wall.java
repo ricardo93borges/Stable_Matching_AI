@@ -4,10 +4,21 @@ public class Wall {
 
     private int x;
     private int y;
+    private int orientation;
+    private int length;
 
-    public Wall(int x, int y) {
+    /**
+     *
+     * @param x
+     * @param y
+     * @param orientation, 0 = horizonral 1,  = vertical
+     * @param length
+     */
+    public Wall(int x, int y, int orientation, int length) {
         this.x = x;
         this.y = y;
+        this.orientation = orientation;
+        this.length = length;
     }
 
     public int getX() {
@@ -24,5 +35,21 @@ public class Wall {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(int orientation) {
+        this.orientation = orientation;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
 }
