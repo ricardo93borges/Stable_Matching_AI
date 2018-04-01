@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0038c7d3-8830-4c47-83ed-966a0acefbdc" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/StableMatchingSimulator/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/StableMatchingSimulator/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/StableMatchingSimulator/Models/Matrix.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/StableMatchingSimulator/Models/Matrix.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/StableMatchingSimulator/Util/AStar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/StableMatchingSimulator/Util/AStar.class" afterDir="false" />
-    </list>
+    <list default="true" id="0038c7d3-8830-4c47-83ed-966a0acefbdc" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -328,16 +323,15 @@
       <workItem from="1522012234329" duration="2813000" />
       <workItem from="1522025798767" duration="165000" />
       <workItem from="1522443128810" duration="9218000" />
-      <workItem from="1522542672506" duration="3941000" />
+      <workItem from="1522542672506" duration="4198000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16137000" />
+    <option name="totallyTimeSpent" value="16394000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="64" y="-11" width="1857" height="1092" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="bottom" id="TODO" order="7" />
