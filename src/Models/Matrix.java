@@ -12,6 +12,9 @@ public class Matrix {
     private ArrayList<Wall> walls;
     private ArrayList<ArrayList<String>> matrix;
 
+    public static final String EMPTY_CHAR = "__";
+    public static final String WALL_CHAR = "WW";
+
     public Matrix(int lines, int columns, ArrayList<Registry> registries, ArrayList<Wall> walls, ArrayList<Agent> agents) {
         this.lines = lines;
         this.columns = columns;
@@ -69,13 +72,21 @@ public class Matrix {
         this.walls = walls;
     }
 
+    public ArrayList<ArrayList<String>> getMatrix() {
+        return matrix;
+    }
+
+    public void setMatrix(ArrayList<ArrayList<String>> matrix) {
+        this.matrix = matrix;
+    }
+
     public void update(){
         this.matrix = new ArrayList<>(this.lines);
 
         for(int i = 0; i<this.lines; i++){
             ArrayList<String> n = new ArrayList<>(this.columns);
             for(int j = 0; j<this.columns; j++){
-                n.add("__");
+                n.add(EMPTY_CHAR);
             }
             this.matrix.add(n);
         }
@@ -83,7 +94,7 @@ public class Matrix {
         for(int i=0; i<this.walls.size(); i++){
             Wall w = this.walls.get(i);
             for(int j=0; j<w.getLength(); j++) {
-                this.matrix.get(w.getX()+j).set(w.getY(), "WW");
+                this.matrix.get(w.getX()+j).set(w.getY(), WALL_CHAR);
             }
         }
 
