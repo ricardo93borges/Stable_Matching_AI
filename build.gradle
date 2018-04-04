@@ -31,5 +31,6 @@ dependencies {
 }
 
 // Define the main class for the application
+sourceSets.main.java.srcDirs = ['src']
 mainClassName = 'Main'
 
