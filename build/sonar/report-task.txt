@@ -1,0 +1,7 @@
+organization=ricardo93borges-github
+projectKey=Stable_Matching_AI
+serverUrl=https://sonarcloud.io
+serverVersion=7.1.1.432
+dashboardUrl=https://sonarcloud.io/dashboard/index/Stable_Matching_AI
+ceTaskId=AWKRCUD4DHpywSEw64Ud
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AWKRCUD4DHpywSEw64Ud
