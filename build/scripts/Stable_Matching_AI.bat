@@ -66,7 +66,7 @@ set CMD_LINE_ARGS=%*
 set CLASSPATH=%APP_HOME%\lib\Stable_Matching_AI.jar;%APP_HOME%\lib\guava-20.0.jar
 
 @rem Execute Stable_Matching_AI
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %STABLE_MATCHING_AI_OPTS%  -classpath "%CLASSPATH%" App %CMD_LINE_ARGS%
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %STABLE_MATCHING_AI_OPTS%  -classpath "%CLASSPATH%" Main %CMD_LINE_ARGS%
 
 :end
 @rem End local scope for the variables with windows NT shell
