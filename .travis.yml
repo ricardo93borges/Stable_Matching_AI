@@ -1,6 +1,6 @@
 language: java
 sudo: false
-install: ant deps
+install: true
 
 addons:
   sonarcloud:
