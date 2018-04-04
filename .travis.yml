@@ -9,7 +9,7 @@ addons:
       secure: "c891ee43d5df3ec346b13df7a2dc5d954889db66"
 
 script:
-  - ./gradle sonarqube
+  - gradle sonarqube
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
