@@ -1,8 +1,20 @@
 language: java
+sudo: false
 install: ant deps
+
+addons:
+  sonarcloud:
+    organization: "ricardo93borges-github"
+    token: 
+      secure: "c891ee43d5df3ec346b13df7a2dc5d954889db66"
+
+script:
+  - ./gradle sonarqube
+
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
 cache:
   directories:
     - $HOME/.gradle/caches/
