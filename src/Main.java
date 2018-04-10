@@ -42,7 +42,7 @@ public class Main {
     }
 
     public static ArrayList<Agent> instantiateAgents(int couplesQuantity){
-        ArrayList<Agent> agents = new ArrayList<>();
+        ArrayList<Agent> agents = new ArrayList<Agent>();
         Random random = new Random();
         int c = 1;
         int gender = 0;
@@ -58,7 +58,7 @@ public class Main {
     }
 
     public static ArrayList<Wall> instantiateWalls(){
-        ArrayList<Wall> walls = new ArrayList<>();
+        ArrayList<Wall> walls = new ArrayList<Wall>();
         walls.add(new Wall(4,4,1,11));
         walls.add(new Wall(9,8,1,10));
         walls.add(new Wall(6,13,1,9));
@@ -67,7 +67,7 @@ public class Main {
     }
 
     public static ArrayList<Registry> instantiateRegistries(int registriesQuantity, ArrayList<Wall> walls){
-        ArrayList<Registry> registries = new ArrayList<>();
+        ArrayList<Registry> registries = new ArrayList<Registry>();
         Random random = new Random();
 
         int c = 1;

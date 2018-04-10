@@ -21,7 +21,7 @@ public class Matrix {
         this.registries = registries;
         this.walls = walls;
         this.agents = agents;
-        this.couples = new ArrayList<>();
+        this.couples = new ArrayList<Couple>();
     }
 
     public int getLines() {
@@ -81,10 +81,10 @@ public class Matrix {
     }
 
     public void update(){
-        this.matrix = new ArrayList<>(this.lines);
+        this.matrix = new ArrayList<ArrayList<String>>(this.lines);
 
         for(int i = 0; i<this.lines; i++){
-            ArrayList<String> n = new ArrayList<>(this.columns);
+            ArrayList<String> n = new ArrayList<String>(this.columns);
             for(int j = 0; j<this.columns; j++){
                 n.add(EMPTY_CHAR);
             }

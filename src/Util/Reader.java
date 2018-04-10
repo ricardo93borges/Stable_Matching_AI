@@ -21,7 +21,7 @@ public class Reader {
             scanner.useDelimiter("\n");
 
             while (scanner.hasNext()){
-                String[] line = scanner.next().split(delimitador);
+                String[] line = this.sanitizeLine(scanner.next().split(delimitador));
                 matriz.add(line);
             }
             scanner.close();
@@ -32,4 +32,10 @@ public class Reader {
         return matriz;
     }
 
+    public String[] sanitizeLine(String[] line){
+        for(int i=0; i<line.length; i++){
+            line[i] = line[i].replace("\r","");
+        }
+        return line;
+    }
 }

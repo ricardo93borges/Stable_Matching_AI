@@ -47,8 +47,8 @@ public class AStar {
         PriorityQueue frontier = new PriorityQueue();
         frontier.add(this.origin);
 
-        HashMap<String, Node> came_from = new HashMap<>();
-        HashMap<String, Double> cost_so_far = new HashMap<>();
+        HashMap<String, Node> came_from = new HashMap<String, Node>();
+        HashMap<String, Double> cost_so_far = new HashMap<String, Double>();
 
         came_from.put(origin.getId(), null);
         cost_so_far.put(origin.getId(), 0.0);
@@ -81,7 +81,7 @@ public class AStar {
     public ArrayList<Node> findPath(){
         HashMap<String, Node> path = this.astar();
 
-        ArrayList<Node> shortestPath = new ArrayList<>();
+        ArrayList<Node> shortestPath = new ArrayList<Node>();
         shortestPath.add(this.destination);
         Node came_from = path.get(this.destination.getId());
 
@@ -99,7 +99,7 @@ public class AStar {
     }
 
     public ArrayList<Node> getNeighbors(Node node){
-        ArrayList<Node> neighbors = new ArrayList<>();
+        ArrayList<Node> neighbors = new ArrayList<Node>();
         ArrayList<ArrayList<String>> m = this.matrix.getMatrix();
         int x,y;
 
