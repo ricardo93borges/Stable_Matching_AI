@@ -2,6 +2,8 @@ import Models.Agent;
 import Models.Matrix;
 import Models.Registry;
 import Models.Wall;
+import Util.AStar;
+import Util.Node;
 import Util.Reader;
 
 import java.io.IOException;
@@ -32,6 +34,9 @@ public class Main {
 
         //Instatiate matrix
         Matrix matrix= new Matrix(20,20, registries, walls, agents);
+
+        AStar aStar = new AStar(new Node(0,0), new Node(9,9), matrix);
+        aStar.findPath();
 
         printMatrix(matrix);
     }

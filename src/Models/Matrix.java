@@ -22,6 +22,7 @@ public class Matrix {
         this.walls = walls;
         this.agents = agents;
         this.couples = new ArrayList<Couple>();
+        this.update();
     }
 
     public int getLines() {
