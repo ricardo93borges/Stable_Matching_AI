@@ -1,5 +1,7 @@
 package Models;
 
+import Util.Node;
+
 import java.util.ArrayList;
 
 public class Matrix {
@@ -112,6 +114,12 @@ public class Matrix {
         for(int i=0; i<this.couples.size(); i++){
             Couple c = this.couples.get(i);
             this.matrix.get(c.getX()).set(c.getY(),c.getName());
+        }
+    }
+
+    public void drawShortestPath(ArrayList<Node> shortestPath){
+        for(Node node : shortestPath){
+            matrix.get(node.getX()).set(node.getY(), "*");
         }
     }
 

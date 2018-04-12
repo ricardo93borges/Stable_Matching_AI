@@ -35,9 +35,12 @@ public class Main {
         //Instatiate matrix
         Matrix matrix= new Matrix(20,20, registries, walls, agents);
 
-        AStar aStar = new AStar(new Node(0,0), new Node(9,9), matrix);
-        aStar.findPath();
+        printMatrix(matrix);
 
+        AStar aStar = new AStar(new Node(0,0), new Node(9,9), matrix);
+        ArrayList<Node> shortestPath = aStar.findPath();
+
+        matrix.drawShortestPath(shortestPath);
         printMatrix(matrix);
     }
 

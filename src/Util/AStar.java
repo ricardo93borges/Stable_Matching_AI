@@ -70,7 +70,9 @@ public class AStar {
                     d = priority;
                     cost_so_far.put(next.getId(), new_cost);
                     frontier.add(next);
-                    came_from.put(next.getId(), current);
+                    if(!came_from.containsKey(next.getId())) {
+                        came_from.put(next.getId(), current);
+                    }
                 }
             }
         }
@@ -85,8 +87,11 @@ public class AStar {
         shortestPath.add(this.destination);
         Node came_from = path.get(this.destination.getId());
 
-        while (came_from != null){
+        while (true){
             came_from = path.get(came_from.getId());
+            if(came_from == null){
+                break;
+            }
             shortestPath.add(came_from);
         }
 
