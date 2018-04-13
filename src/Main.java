@@ -96,7 +96,7 @@ public class Main {
     }
 
     public static void printMatrix(Matrix matrix){
-        matrix.update();
+        //matrix.update();
         clear();
         System.out.print(matrix.toString());
     }

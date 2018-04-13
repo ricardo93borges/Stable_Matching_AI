@@ -12,7 +12,7 @@ public class Matrix {
     private ArrayList<Couple> couples;
     private ArrayList<Registry> registries;
     private ArrayList<Wall> walls;
-    private ArrayList<ArrayList<String>> matrix;
+    private ArrayList<ArrayList<Part>> matrix;
 
     public static final String EMPTY_CHAR = "__";
     public static final String WALL_CHAR = "WW";
@@ -75,51 +75,51 @@ public class Matrix {
         this.walls = walls;
     }
 
-    public ArrayList<ArrayList<String>> getMatrix() {
+    public ArrayList<ArrayList<Part>> getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(ArrayList<ArrayList<String>> matrix) {
+    public void setMatrix(ArrayList<ArrayList<Part>> matrix) {
         this.matrix = matrix;
     }
 
     public void update(){
-        this.matrix = new ArrayList<ArrayList<String>>(this.lines);
+        this.matrix = new ArrayList<ArrayList<Part>>(this.lines);
 
         for(int i = 0; i<this.lines; i++){
-            ArrayList<String> n = new ArrayList<String>(this.columns);
+            ArrayList<Part> line = new ArrayList<Part>(this.columns);
             for(int j = 0; j<this.columns; j++){
-                n.add(EMPTY_CHAR);
+                line.add(new Part(EMPTY_CHAR));
             }
-            this.matrix.add(n);
+            this.matrix.add(line);
         }
 
         for(int i=0; i<this.walls.size(); i++){
             Wall w = this.walls.get(i);
             for(int j=0; j<w.getLength(); j++) {
-                this.matrix.get(w.getX()+j).set(w.getY(), WALL_CHAR);
+                this.matrix.get(w.getX()+j).set(w.getY(), w);
             }
         }
 
         for(int i=0; i<this.registries.size(); i++){
             Registry r = this.registries.get(i);
-            this.matrix.get(r.getX()).set(r.getY(),r.getName());
+            this.matrix.get(r.getX()).set(r.getY(),r);
         }
 
         for(int i=0; i<this.agents.size(); i++){
             Agent a = this.agents.get(i);
-            this.matrix.get(a.getX()).set(a.getY(),a.getName());
+            this.matrix.get(a.getX()).set(a.getY(),a);
         }
 
         for(int i=0; i<this.couples.size(); i++){
             Couple c = this.couples.get(i);
-            this.matrix.get(c.getX()).set(c.getY(),c.getName());
+            this.matrix.get(c.getX()).set(c.getY(),c);
         }
     }
 
     public void drawShortestPath(ArrayList<Node> shortestPath){
         for(Node node : shortestPath){
-            matrix.get(node.getX()).set(node.getY(), "*");
+            matrix.get(node.getX()).set(node.getY(), new Part("*"));
         }
     }
 
@@ -154,7 +154,7 @@ public class Matrix {
 
 
             for(int j = 0; j<this.columns; j++){
-                str.append("|"+this.matrix.get(i).get(j));
+                str.append("|"+this.matrix.get(i).get(j).getName());
                 if(j == this.columns-1){
                     str.append("|");
                 }

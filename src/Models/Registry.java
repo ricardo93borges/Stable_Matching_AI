@@ -1,13 +1,12 @@
 package Models;
 
-public class Registry {
+public class Registry extends Part {
 
-    private String name;
     private int x;
     private int y;
 
     public Registry(String name, int x, int y) {
-        this.name = name;
+        super(name);
         this.x = x;
         this.y = y;
     }
@@ -27,14 +26,4 @@ public class Registry {
     public void setY(int y) {
         this.y = y;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
 }

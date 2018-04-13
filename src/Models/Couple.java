@@ -1,6 +1,6 @@
 package Models;
 
-public class Couple {
+public class Couple extends Part {
 
     private Agent maleAgent;
     private Agent femaleAgent;
@@ -8,6 +8,7 @@ public class Couple {
     private int y;
 
     public Couple(Agent maleAgent, Agent femaleAgent, int x, int y) {
+        super(maleAgent.getName()+femaleAgent.getName());
         this.maleAgent = maleAgent;
         this.femaleAgent = femaleAgent;
         this.x = x;
@@ -44,9 +45,5 @@ public class Couple {
 
     public void setY(int y) {
         this.y = y;
-    }
-
-    public String getName(){
-        return this.maleAgent.getName()+this.femaleAgent.getName();
     }
 }

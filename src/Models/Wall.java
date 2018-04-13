@@ -1,6 +1,6 @@
 package Models;
 
-public class Wall {
+public class Wall extends Part{
 
     private int x;
     private int y;
@@ -15,6 +15,7 @@ public class Wall {
      * @param length
      */
     public Wall(int x, int y, int orientation, int length) {
+        super(Matrix.WALL_CHAR);
         this.x = x;
         this.y = y;
         this.orientation = orientation;

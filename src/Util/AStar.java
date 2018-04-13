@@ -1,6 +1,7 @@
 package Util;
 
 import Models.Matrix;
+import Models.Part;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,14 +106,14 @@ public class AStar {
 
     public ArrayList<Node> getNeighbors(Node node){
         ArrayList<Node> neighbors = new ArrayList<Node>();
-        ArrayList<ArrayList<String>> m = this.matrix.getMatrix();
+        ArrayList<ArrayList<Part>> m = this.matrix.getMatrix();
         int x,y;
 
         //top
         x = node.getX();
         y = node.getY()-1;
         if(y >= 0 && y <= this.matrix.getColumns()){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
+            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
                 neighbors.add(new Node(x,y));
             }
         }
@@ -129,7 +130,7 @@ public class AStar {
         x = node.getX();
         y = node.getY()+1;
         if(y >=0 && y <= this.matrix.getColumns()){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
+            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
                 neighbors.add(new Node(x,y));
             }
         }
@@ -146,7 +147,7 @@ public class AStar {
         x = node.getX()+1;
         y = node.getY();
         if(x >=0 && x <= this.matrix.getLines()){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
+            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
                 neighbors.add(new Node(x,y));
             }
         }
@@ -163,7 +164,7 @@ public class AStar {
         x = node.getX()-1;
         y = node.getY();
         if(x >= 0 && x <= this.matrix.getLines()){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
+            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
                 neighbors.add(new Node(x,y));
             }
         }
@@ -180,7 +181,7 @@ public class AStar {
         x = node.getX()+1;
         y = node.getY()+1;
         if(x <= this.matrix.getLines() && y <= this.matrix.getColumns()){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
+            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
                 neighbors.add(new Node(x,y));
             }
         }
@@ -197,7 +198,7 @@ public class AStar {
         x = node.getX()-1;
         y = node.getY()-1;
         if(x >= 0 && y >= 0){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
+            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
                 neighbors.add(new Node(x,y));
             }
         }
@@ -214,7 +215,7 @@ public class AStar {
         x = node.getX()+1;
         y = node.getY()-1;
         if(x <= this.matrix.getLines() && y >= 0){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
+            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
                 neighbors.add(new Node(x,y));
             }
         }
@@ -231,7 +232,7 @@ public class AStar {
         x = node.getX()-1;
         y = node.getY()-1;
         if(x >= 0 && y >= 0){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
+            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
                 neighbors.add(new Node(x,y));
             }
         }

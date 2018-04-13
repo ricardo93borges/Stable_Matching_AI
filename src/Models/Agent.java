@@ -1,10 +1,11 @@
 package Models;
 
+import Util.Node;
+
 import java.util.ArrayList;
 
-public class Agent {
+public class Agent extends Part{
 
-    private String name;
     private int x;
     private int y;
     private int intention;
@@ -15,18 +16,10 @@ public class Agent {
     private ArrayList<Agent> preference;
 
     public Agent(String name, int x, int y, int gender) {
-        this.name = name;
+        super(name);
         this.x = x;
         this.y = y;
         this.gender = gender;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public int getX() {
@@ -101,9 +94,9 @@ public class Agent {
     }
 
     public void observe(Matrix matrix){
-        /**
-         * TODO observar 2 casas ao seu redor por um par
-         */
+        //TODO observar 2 casas ao seu redor por um par
+
+        ArrayList<Agent> agents = new ArrayList<Agent>();
     }
 
     public void walk(Matrix matrix){
