@@ -8,6 +8,7 @@ import Util.Reader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Main {
@@ -16,15 +17,15 @@ public class Main {
         Reader reader = new Reader();
 
         //Read
-        ArrayList data = reader.readCsv("data.csv", " ");
+        ArrayList<String[]> data = reader.readCsv("data.csv", " ");
 
         //Get couples and registries
-        String[] line = (String[]) data.get(0);
+        String[] line = data.get(0);
         int couplesQuantity = Integer.parseInt(line[0]);
         int registriesQuantity = Integer.parseInt(line[1]);
 
         //Instantiate Agents
-        ArrayList<Agent> agents = instantiateAgents(couplesQuantity);
+        ArrayList<Agent> agents = instantiateAgents(couplesQuantity, data);
 
         //Instantiate walls
         ArrayList<Wall> walls = instantiateWalls();
@@ -49,17 +50,46 @@ public class Main {
             System.out.println();
     }
 
-    public static ArrayList<Agent> instantiateAgents(int couplesQuantity){
+    public static ArrayList<Agent> instantiateAgents(int couplesQuantity,  ArrayList<String[]> data){
+        //Instatiate agents
         ArrayList<Agent> agents = new ArrayList<Agent>();
         Random random = new Random();
+        String prefix = "H";
         int c = 1;
+        int n = 1;
         int gender = 0;
 
         while (c <= couplesQuantity*2){
-            agents.add(new Agent("A"+c,random.nextInt(20),random.nextInt(20), gender));
+            agents.add(new Agent(prefix+n,random.nextInt(20),random.nextInt(20), gender));
             c++;
-            if(c == 3)
+            n++;
+            if(c > 3 && prefix.equals("H")) {
                 gender = 1;
+                n = 1;
+                prefix = "M";
+            }
+        }
+
+        //Set preferences
+        String prefixAgent = "H";
+        String prefixPreference = "M";
+        for(int i = 1; i<data.size(); i++){
+            if(i > couplesQuantity){
+                prefixAgent = "M";
+                prefixPreference = "H";
+            }
+
+            String[] l = data.get(i);
+            Agent agent = Agent.findAgentByName(agents, prefixAgent+l[0]);
+            HashMap<Integer, Agent> preference = new HashMap<Integer, Agent>();
+
+            for(int j=1; j < l.length; j++){
+                Agent a = Agent.findAgentByName(agents, prefixPreference+l[j]);
+                preference.put(j, a);
+            }
+            agent.setPreference(preference);
+
+
         }
 
         return agents;
