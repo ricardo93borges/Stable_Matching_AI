@@ -87,6 +87,23 @@ public class Matrix {
         return true;
     }
 
+    public boolean isCoordValid(int x, int y){
+        //Out matrix
+        if(y < 0 || y >= this.getColumns() || x < 0 || x >= this.getLines()) {
+            System.out.println("Out matrix "+x+","+y);
+            return false;
+        }
+
+        //Is not an empty coord
+        Part part = this.getMatrix().get(x).get(y);
+        if(!part.getName().equals(Matrix.EMPTY_CHAR)) {
+            System.out.println("Not a empty char "+x+","+y+" - "+part.getName());
+            return false;
+        }
+
+        return true;
+    }
+
     public void update(){
         this.matrix = new ArrayList<ArrayList<Part>>(this.lines);
 
@@ -112,7 +129,7 @@ public class Matrix {
 
         for(int i=0; i<this.agents.size(); i++){
             Agent a = this.agents.get(i);
-            this.matrix.get(a.getX()).set(a.getY(),a);
+            this.matrix.get(a.getY()).set(a.getX(),a);
         }
 
         for(int i=0; i<this.couples.size(); i++){

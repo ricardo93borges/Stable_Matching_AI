@@ -9,18 +9,24 @@ public class Agent extends Part{
 
     private int x;
     private int y;
-    private int intention;
+    private Intention intention;
     private int gender;
     private Agent fiance;
     private Agent spouse;
     private Agent interest;
     private HashMap<Integer, Agent> preference;
+    private Status status;
+    private int goingX;//1 = right, 0 = left
+    private int goingY;//1 = up, 0 = down
 
     public Agent(String name, int x, int y, int gender) {
         super(name);
         this.x = x;
         this.y = y;
         this.gender = gender;
+        this.status = Status.SINGLE;
+        this.goingX = 1;
+        this.goingY = 1;
     }
 
     public int getX() {
@@ -47,11 +53,11 @@ public class Agent extends Part{
         this.gender = gender;
     }
 
-    public int getIntention() {
+    public Intention getIntention() {
         return intention;
     }
 
-    public void setIntention(int intention) {
+    public void setIntention(Intention intention) {
         this.intention = intention;
     }
 
@@ -87,6 +93,30 @@ public class Agent extends Part{
         this.preference = preference;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public int getGoingX() {
+        return goingX;
+    }
+
+    public void setGoingX(int goingX) {
+        this.goingX = goingX;
+    }
+
+    public int getGoingY() {
+        return goingY;
+    }
+
+    public void setGoingY(int goingY) {
+        this.goingY = goingY;
+    }
+
     public Registry locateNearestRegistry(Matrix matrix){
         /**
          * TODO localizar cartório mais próximo
@@ -98,7 +128,7 @@ public class Agent extends Part{
      * Look around for agents that is in preference list
      * @param matrix
      */
-    public void observe(Matrix matrix){
+    public Agent observe(Matrix matrix){
         //TODO observar 2 casas ao seu redor por um par
         ArrayList<Agent> agents = new ArrayList<Agent>();
         ArrayList<ArrayList<Part>> m = matrix.getMatrix();
@@ -153,20 +183,8 @@ public class Agent extends Part{
                 }
             }
         }
-    }
 
-    /**
-     *
-     * 1-Single - Male agent is single
-     * 2-Happy marriage - Male agent is married with female agent with highest preference
-     * 3-Unhappy marriage - Male agent is married with female agent with not highest preference
-     * 4-Happy engagement - Male agent is engaged with female agent with highest preference
-     * 5-Unhappy engagement - Male agent is engaged with female agent with not highest preference
-     *
-     * @return
-     */
-    public int getStatus(){
-        return 0;
+        return favoriteAgent;
     }
 
     public void walk(Matrix matrix, int[] location){
@@ -175,11 +193,62 @@ public class Agent extends Part{
          */
     }
 
-    public void walk(Matrix matrix){
-        /**
-         * TODO andar verticalmente uma casa, desviar de objetos
-         */
+    public int walkDefineX(Matrix matrix){
+        int x = this.getX();
+        int y = this.getY();
+        if (this.getGoingX() == 0) {
+            x = this.getX() - 1;//Walk left
+            if (!matrix.isCoordValid(x, y)) {
+                x = this.getX() + 2;//Walk right
+                this.setGoingX(0);
+            }
+        } else {
+            x = this.getX() + 1;//Walk right
+            if (!matrix.isCoordValid(x, y)) {
+                x = this.getX() - 2;//Walk left
+                this.setGoingX(1);
+            }
+        }
+
+        return x;
     }
+
+    public void walk(Matrix matrix){
+        int x = this.getX();
+        int y = this.getY();
+
+        //Define y
+        if(this.getGoingY() == 1){
+            y = this.getY()-1;//Walk up
+            if(!matrix.isCoordValid(x,y)){
+                /*y = this.getY()+1;//Walk down*/
+                y = this.getY();
+                this.setGoingY(0);
+
+                x = this.walkDefineX(matrix);
+
+            }
+        }else{
+            y = this.getY()+1;//Walk down
+            if(!matrix.isCoordValid(x,y)){
+                /*y = this.getY()-2;//Walk up*/
+                y = this.getY();
+                this.setGoingY(1);
+
+                x = this.walkDefineX(matrix);
+            }
+        }
+
+        if(!matrix.isCoordValid(x,y)){
+            y = this.getY();
+            x = this.getX();
+        }
+
+        this.setX(x);
+        this.setY(y);
+    }
+
+
 
     public void engage(Agent agent){
         this.setFiance(agent);

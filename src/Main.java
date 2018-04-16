@@ -1,7 +1,4 @@
-import Models.Agent;
-import Models.Matrix;
-import Models.Registry;
-import Models.Wall;
+import Models.*;
 import Util.AStar;
 import Util.Node;
 import Util.Reader;
@@ -17,7 +14,7 @@ public class Main {
         Reader reader = new Reader();
 
         //Read
-        ArrayList<String[]> data = reader.readCsv("data.csv", " ");
+        ArrayList<String[]> data = reader.readCsv("data2.csv", " ");
 
         //Get couples and registries
         String[] line = data.get(0);
@@ -43,11 +40,48 @@ public class Main {
 
         matrix.drawShortestPath(shortestPath);
         printMatrix(matrix);*/
+
+        while(true) {
+            for (Agent agent : agents) {
+                agent.walk(matrix);
+            }
+            printMatrix(matrix);
+        }
+
+        //run(matrix,agents,registries);
     }
 
     public static void run(Matrix matrix, ArrayList<Agent> agents, ArrayList<Registry> registries){
         for(Agent agent : agents){
+            if(agent.getIntention() == null) {
+                if (agent.getStatus() == Status.HAPPY_MARRIAGE) {
+                    //walk
+                } else if (agent.getStatus() == Status.HAPPY_ENGAGEMENT) {
+                    //walk to registry
+                } else {
+                    if (agent.getGender() == 1) {
+                        Agent interestingFemaleAgent = agent.observe(matrix);
+                        int[] coord1 = {agent.getX(), agent.getY()};
+                        int[] coord2 = {interestingFemaleAgent.getX(), interestingFemaleAgent.getY()};
+                        if (matrix.isCloser(coord1, coord2)) {
+                            /*TODO female agent has to decide*/
+                            if (agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
+                                //engage
+                            } else {
+                                //locate nearest registry
+                                //set intention to all involved agents
+                            }
+                        } else {
+                            //get closer
+                        }
 
+                    } else {
+                        //walk
+                    }
+                }
+            }else{
+                //deal with the agents intentions
+            }
         }
 
         printMatrix(matrix);
@@ -67,11 +101,12 @@ public class Main {
         int n = 1;
         int gender = 0;
 
-        while (c <= couplesQuantity*2){
+        int condition = couplesQuantity == 1 ? 2 : couplesQuantity*2;
+        while (c <= condition){
             agents.add(new Agent(prefix+n,random.nextInt(20),random.nextInt(20), gender));
             c++;
             n++;
-            if(c > 3 && prefix.equals("H")) {
+            if(c > couplesQuantity && prefix.equals("H")) {
                 gender = 1;
                 n = 1;
                 prefix = "M";
@@ -134,7 +169,7 @@ public class Main {
     }
 
     public static void printMatrix(Matrix matrix){
-        //matrix.update();
+        matrix.update();
         clear();
         System.out.print(matrix.toString());
     }
