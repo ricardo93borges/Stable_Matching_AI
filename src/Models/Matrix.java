@@ -83,6 +83,10 @@ public class Matrix {
         this.matrix = matrix;
     }
 
+    public boolean isCloser(int[] location1, int[] location2){
+        return true;
+    }
+
     public void update(){
         this.matrix = new ArrayList<ArrayList<Part>>(this.lines);
 

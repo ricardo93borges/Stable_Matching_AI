@@ -38,10 +38,18 @@ public class Main {
 
         printMatrix(matrix);
 
-        AStar aStar = new AStar(new Node(0,0), new Node(9,9), matrix);
+        /*AStar aStar = new AStar(new Node(0,0), new Node(9,9), matrix);
         ArrayList<Node> shortestPath = aStar.findPath();
 
         matrix.drawShortestPath(shortestPath);
+        printMatrix(matrix);*/
+    }
+
+    public static void run(Matrix matrix, ArrayList<Agent> agents, ArrayList<Registry> registries){
+        for(Agent agent : agents){
+
+        }
+
         printMatrix(matrix);
     }
 

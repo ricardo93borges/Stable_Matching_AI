@@ -139,12 +139,40 @@ public class Agent extends Part{
          * TODO verificar se os agents encontrados estão na lista de preferencias e escolher o com prioridade mais alta
          */
 
-        Agent favoriteAgent = agents.get(0);
+        Agent favoriteAgent = null;
+        if(agents.size() > 0) {
+            favoriteAgent = agents.get(0);
+            int index = Integer.MAX_VALUE;
 
-        for(Agent agent : agents){
-
+            for (int i = 1; i < agents.size(); i++) {
+                for (Integer key : this.getPreference().keySet()) {
+                    if (agents.get(i).equals(this.getPreference().get(key)) && key < index) {
+                        favoriteAgent = agents.get(i);
+                        index = key;
+                    }
+                }
+            }
         }
+    }
 
+    /**
+     *
+     * 1-Single - Male agent is single
+     * 2-Happy marriage - Male agent is married with female agent with highest preference
+     * 3-Unhappy marriage - Male agent is married with female agent with not highest preference
+     * 4-Happy engagement - Male agent is engaged with female agent with highest preference
+     * 5-Unhappy engagement - Male agent is engaged with female agent with not highest preference
+     *
+     * @return
+     */
+    public int getStatus(){
+        return 0;
+    }
+
+    public void walk(Matrix matrix, int[] location){
+        /**
+         * TODO andar verticalmente uma casa, desviar de objetos
+         */
     }
 
     public void walk(Matrix matrix){
