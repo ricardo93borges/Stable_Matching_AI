@@ -199,14 +199,14 @@ public class Agent extends Part{
         if (this.getGoingX() == 0) {
             x = this.getX() - 1;//Walk left
             if (!matrix.isCoordValid(x, y)) {
-                x = this.getX() + 2;//Walk right
-                this.setGoingX(0);
+                x = this.getX() + 1;//Walk right
+                this.setGoingX(1);
             }
         } else {
             x = this.getX() + 1;//Walk right
             if (!matrix.isCoordValid(x, y)) {
-                x = this.getX() - 2;//Walk left
-                this.setGoingX(1);
+                x = this.getX() - 1;//Walk left
+                this.setGoingX(0);
             }
         }
 
@@ -221,20 +221,21 @@ public class Agent extends Part{
         if(this.getGoingY() == 1){
             y = this.getY()-1;//Walk up
             if(!matrix.isCoordValid(x,y)){
-                /*y = this.getY()+1;//Walk down*/
+
+                if(matrix.isCoordNullPointer(x,y))
+                    this.setGoingY(0);
+
                 y = this.getY();
-                this.setGoingY(0);
-
                 x = this.walkDefineX(matrix);
-
             }
         }else{
             y = this.getY()+1;//Walk down
             if(!matrix.isCoordValid(x,y)){
-                /*y = this.getY()-2;//Walk up*/
-                y = this.getY();
-                this.setGoingY(1);
 
+                if(matrix.isCoordNullPointer(x,y))
+                    this.setGoingY(1);
+
+                y = this.getY();
                 x = this.walkDefineX(matrix);
             }
         }

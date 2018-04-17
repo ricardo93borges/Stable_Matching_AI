@@ -27,6 +27,12 @@ public class Matrix {
         this.update();
     }
 
+    public Matrix(int lines, int columns) {
+        this.lines = lines;
+        this.columns = columns;
+        this.couples = new ArrayList<Couple>();
+    }
+
     public int getLines() {
         return lines;
     }
@@ -88,20 +94,26 @@ public class Matrix {
     }
 
     public boolean isCoordValid(int x, int y){
-        //Out matrix
-        if(y < 0 || y >= this.getColumns() || x < 0 || x >= this.getLines()) {
-            System.out.println("Out matrix "+x+","+y);
-            return false;
-        }
+        if(!this.isCoordNullPointer(x,y) && this.isCoordEmpty(x,y))
+            return true;
+        return false;
+    }
 
-        //Is not an empty coord
-        Part part = this.getMatrix().get(x).get(y);
+    public boolean isCoordEmpty(int x, int y){
+        Part part = this.getMatrix().get(y).get(x);
         if(!part.getName().equals(Matrix.EMPTY_CHAR)) {
             System.out.println("Not a empty char "+x+","+y+" - "+part.getName());
             return false;
         }
-
         return true;
+    }
+
+    public boolean isCoordNullPointer(int x, int y){
+        if(y < 0 || y >= this.getColumns() || x < 0 || x >= this.getLines()) {
+            System.out.println("Out matrix "+x+","+y);
+            return true;
+        }
+        return false;
     }
 
     public void update(){
@@ -118,13 +130,13 @@ public class Matrix {
         for(int i=0; i<this.walls.size(); i++){
             Wall w = this.walls.get(i);
             for(int j=0; j<w.getLength(); j++) {
-                this.matrix.get(w.getX()+j).set(w.getY(), w);
+                this.matrix.get(w.getY()+j).set(w.getX(), w);
             }
         }
 
         for(int i=0; i<this.registries.size(); i++){
             Registry r = this.registries.get(i);
-            this.matrix.get(r.getX()).set(r.getY(),r);
+            this.matrix.get(r.getY()).set(r.getX(),r);
         }
 
         for(int i=0; i<this.agents.size(); i++){
@@ -134,7 +146,7 @@ public class Matrix {
 
         for(int i=0; i<this.couples.size(); i++){
             Couple c = this.couples.get(i);
-            this.matrix.get(c.getX()).set(c.getY(),c);
+            this.matrix.get(c.getY()).set(c.getX(),c);
         }
     }
 

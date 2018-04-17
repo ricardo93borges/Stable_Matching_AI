@@ -21,8 +21,10 @@ public class Main {
         int couplesQuantity = Integer.parseInt(line[0]);
         int registriesQuantity = Integer.parseInt(line[1]);
 
+        Matrix matrix= new Matrix(20,20);
+
         //Instantiate Agents
-        ArrayList<Agent> agents = instantiateAgents(couplesQuantity, data);
+        ArrayList<Agent> agents = instantiateAgents(matrix, couplesQuantity, data);
 
         //Instantiate walls
         ArrayList<Wall> walls = instantiateWalls();
@@ -31,7 +33,9 @@ public class Main {
         ArrayList<Registry> registries = instantiateRegistries(registriesQuantity, walls);
 
         //Instatiate matrix
-        Matrix matrix= new Matrix(20,20, registries, walls, agents);
+        matrix.setAgents(agents);
+        matrix.setWalls(walls);
+        matrix.setRegistries(registries);
 
         printMatrix(matrix);
 
@@ -55,7 +59,7 @@ public class Main {
         for(Agent agent : agents){
             if(agent.getIntention() == null) {
                 if (agent.getStatus() == Status.HAPPY_MARRIAGE) {
-                    //walk
+                    agent.walk(matrix);
                 } else if (agent.getStatus() == Status.HAPPY_ENGAGEMENT) {
                     //walk to registry
                 } else {
@@ -76,7 +80,7 @@ public class Main {
                         }
 
                     } else {
-                        //walk
+                        agent.walk(matrix);
                     }
                 }
             }else{
@@ -92,7 +96,7 @@ public class Main {
             System.out.println();
     }
 
-    public static ArrayList<Agent> instantiateAgents(int couplesQuantity,  ArrayList<String[]> data){
+    public static ArrayList<Agent> instantiateAgents(Matrix matrix, int couplesQuantity,  ArrayList<String[]> data){
         //Instatiate agents
         ArrayList<Agent> agents = new ArrayList<Agent>();
         Random random = new Random();
@@ -103,7 +107,7 @@ public class Main {
 
         int condition = couplesQuantity == 1 ? 2 : couplesQuantity*2;
         while (c <= condition){
-            agents.add(new Agent(prefix+n,random.nextInt(20),random.nextInt(20), gender));
+            agents.add(new Agent(prefix+n,random.nextInt(matrix.getLines()),random.nextInt(matrix.getColumns()), gender));
             c++;
             n++;
             if(c > couplesQuantity && prefix.equals("H")) {
@@ -140,10 +144,12 @@ public class Main {
 
     public static ArrayList<Wall> instantiateWalls(){
         ArrayList<Wall> walls = new ArrayList<Wall>();
+
         walls.add(new Wall(4,4,1,11));
-        walls.add(new Wall(9,8,1,10));
-        walls.add(new Wall(6,13,1,9));
-        walls.add(new Wall(3,17,1,11));
+        walls.add(new Wall(8,9,1,10));
+        walls.add(new Wall(13,6,1,9));
+        walls.add(new Wall(17,3,1,11));
+
         return walls;
     }
 
@@ -160,7 +166,7 @@ public class Main {
 
             c++;
             w++;
-            if(w > wall.getLength()-1){
+            if(w > walls.size()-1){
                 w = 0;
                 i++;
             }
