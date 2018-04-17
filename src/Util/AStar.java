@@ -109,141 +109,25 @@ public class AStar {
         ArrayList<ArrayList<Part>> m = this.matrix.getMatrix();
         int x,y;
 
-        //top
-        x = node.getX();
-        y = node.getY()-1;
-        if(y >= 0 && y <= this.matrix.getColumns()){
-            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
+        int[][] spots = {
+            {node.getX(),node.getY()-1},//top
+            {node.getX(),node.getY()+1},//bottom
+            {node.getX()+1,node.getY()},//right
+            {node.getX()-1,node.getY()},//left
+            {node.getX()+1,node.getY()+1},//upper right diagonal
+            {node.getX()-1,node.getY()-1},//upper left diagonal
+            {node.getX()+1,node.getY()-1},//bottom right diagonal
+            {node.getX()-1,node.getY()-1},//bottom left diagonal
+        };
+
+        for(int[] spot : spots){
+            x = spot[0];
+            y = spot[1];
+
+            if(y >= 0 && y <= this.matrix.getColumns() && x >= 0 && x <= this.matrix.getLines())
+                if(m.get(y).get(x).getName().equals(Matrix.EMPTY_CHAR))
+                    neighbors.add(new Node(x,y));
         }
-
-        /*x = node.getX();
-        y = node.getY()-2;
-        if(y >= 0){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }*/
-
-        //bottom
-        x = node.getX();
-        y = node.getY()+1;
-        if(y >=0 && y <= this.matrix.getColumns()){
-            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }
-
-        /*x = node.getX();
-        y = node.getY()+2;
-        if(y <= this.matrix.getColumns()){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }*/
-
-        //right
-        x = node.getX()+1;
-        y = node.getY();
-        if(x >=0 && x <= this.matrix.getLines()){
-            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }
-
-        /*x = node.getX()+2;
-        y = node.getY();
-        if(x <= this.matrix.getLines()){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }*/
-
-        //left
-        x = node.getX()-1;
-        y = node.getY();
-        if(x >= 0 && x <= this.matrix.getLines()){
-            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }
-
-        /*x = node.getX()-2;
-        y = node.getY();
-        if(x >= 0){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }*/
-
-        //upper right diagonal
-        x = node.getX()+1;
-        y = node.getY()+1;
-        if(x <= this.matrix.getLines() && y <= this.matrix.getColumns()){
-            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }
-
-        /*x = node.getX()+2;
-        y = node.getY()+2;
-        if(x <= this.matrix.getLines() && y <= this.matrix.getColumns()){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }*/
-
-        //upper left diagonal
-        x = node.getX()-1;
-        y = node.getY()-1;
-        if(x >= 0 && y >= 0){
-            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }
-
-        /*x = node.getX()-2;
-        y = node.getY()-2;
-        if(x >= 0 && y >= 0){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }*/
-
-        //bottom right diagonal
-        x = node.getX()+1;
-        y = node.getY()-1;
-        if(x <= this.matrix.getLines() && y >= 0){
-            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }
-
-        /*x = node.getX()+2;
-        y = node.getY()-2;
-        if(x <= this.matrix.getLines() && y >= 0){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }*/
-
-        //bottom left diagonal
-        x = node.getX()-1;
-        y = node.getY()-1;
-        if(x >= 0 && y >= 0){
-            if(m.get(x).get(y).getName().equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }
-
-        /*x = node.getX()-2;
-        y = node.getY()-2;
-        if(x >= 0 && y >= 0){
-            if(m.get(x).get(y).equals(Matrix.EMPTY_CHAR)){
-                neighbors.add(new Node(x,y));
-            }
-        }*/
 
         return  neighbors;
     }

@@ -14,7 +14,7 @@ public class Main {
         Reader reader = new Reader();
 
         //Read
-        ArrayList<String[]> data = reader.readCsv("data2.csv", " ");
+        ArrayList<String[]> data = reader.readCsv("data.csv", " ");
 
         //Get couples and registries
         String[] line = data.get(0);
@@ -45,12 +45,12 @@ public class Main {
         matrix.drawShortestPath(shortestPath);
         printMatrix(matrix);*/
 
-        while(true) {
+        /*while(true) {
             for (Agent agent : agents) {
                 agent.walk(matrix);
             }
             printMatrix(matrix);
-        }
+        }*/
 
         //run(matrix,agents,registries);
     }
