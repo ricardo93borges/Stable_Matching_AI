@@ -139,9 +139,11 @@ public class Matrix {
             this.matrix.get(r.getY()).set(r.getX(),r);
         }
 
-        for(int i=0; i<this.agents.size(); i++){
-            Agent a = this.agents.get(i);
-            this.matrix.get(a.getY()).set(a.getX(),a);
+        if(this.agents != null) {
+            for (int i = 0; i < this.agents.size(); i++) {
+                Agent a = this.agents.get(i);
+                this.matrix.get(a.getY()).set(a.getX(), a);
+            }
         }
 
         for(int i=0; i<this.couples.size(); i++){

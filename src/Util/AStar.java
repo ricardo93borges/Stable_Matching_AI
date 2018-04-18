@@ -20,6 +20,10 @@ public class AStar {
         this.matrix = matrix;
     }
 
+    public AStar() {
+
+    }
+
     public Node getOrigin() {
         return origin;
     }
@@ -45,6 +49,10 @@ public class AStar {
     }
 
     public HashMap<String, Node> astar(){
+        //System.out.println("Ori: "+this.getOrigin().getX()+","+this.getOrigin().getY());
+        //System.out.println("Des: "+this.getDestination().getX()+","+this.getDestination().getY());
+
+        ArrayList<String> ids = new ArrayList<String>();
         PriorityQueue frontier = new PriorityQueue();
         frontier.add(this.origin);
 
@@ -62,6 +70,7 @@ public class AStar {
 
             Double d = Double.MAX_VALUE;
             ArrayList<Node> neighbors = getNeighbors(current);
+            //neighbors = new ArrayList<Node>();
 
             for (Node next: neighbors) {
                 double new_cost = 0.0;
@@ -70,7 +79,12 @@ public class AStar {
                 if(!cost_so_far.containsKey(next.getId()) || priority < d){
                     d = priority;
                     cost_so_far.put(next.getId(), new_cost);
-                    frontier.add(next);
+
+                    if(!ids.contains(next.getId())) {
+                        frontier.add(next);
+                        ids.add(next.getId());
+                    }
+
                     if(!came_from.containsKey(next.getId())) {
                         came_from.put(next.getId(), current);
                     }
@@ -83,12 +97,12 @@ public class AStar {
 
     public ArrayList<Node> findPath(){
         HashMap<String, Node> path = this.astar();
-
         ArrayList<Node> shortestPath = new ArrayList<Node>();
+
         shortestPath.add(this.destination);
         Node came_from = path.get(this.destination.getId());
 
-        while (true){
+        while (true && came_from != null){
             came_from = path.get(came_from.getId());
             if(came_from == null){
                 break;
@@ -124,9 +138,11 @@ public class AStar {
             x = spot[0];
             y = spot[1];
 
-            if(y >= 0 && y <= this.matrix.getColumns() && x >= 0 && x <= this.matrix.getLines())
-                if(m.get(y).get(x).getName().equals(Matrix.EMPTY_CHAR))
-                    neighbors.add(new Node(x,y));
+            if(y >= 0 && y < this.matrix.getColumns() && x >= 0 && x < this.matrix.getLines())
+                if(m.get(y) != null)
+                    if(m.get(y).get(x) != null)
+                        if(!m.get(y).get(x).getName().equals(Matrix.WALL_CHAR))
+                            neighbors.add(new Node(x,y));
         }
 
         return  neighbors;

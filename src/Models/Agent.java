@@ -1,9 +1,11 @@
 package Models;
 
+import Util.AStar;
 import Util.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class Agent extends Part{
 
@@ -18,6 +20,7 @@ public class Agent extends Part{
     private Status status;
     private int goingX;//1 = right, 0 = left
     private int goingY;//1 = up, 0 = down
+    private Stack<Node> nearestRegistryPath;
 
     public Agent(String name, int x, int y, int gender) {
         super(name);
@@ -117,11 +120,51 @@ public class Agent extends Part{
         this.goingY = goingY;
     }
 
-    public Registry locateNearestRegistry(Matrix matrix){
-        /**
-         * TODO localizar cartório mais próximo
-         */
-        return null;
+    public Stack<Node> getNearestRegistryPath() {
+        return nearestRegistryPath;
+    }
+
+    public void setNearestRegistryPath(Stack<Node> nearestRegistryPath) {
+        this.nearestRegistryPath = nearestRegistryPath;
+    }
+
+    public void locateNearestRegistry(Matrix matrix){
+        ArrayList<ArrayList<Node>> paths = new ArrayList<ArrayList<Node>>();
+        AStar aStar = new AStar();
+        aStar.setMatrix(matrix);
+
+        for(Registry registry : matrix.getRegistries()){
+            aStar.setOrigin(new Node(this.getX(), this.getY()));
+            aStar.setDestination(new Node(registry.getX(), registry.getY()));
+            ArrayList<Node> path = aStar.findPath();
+            paths.add(path);
+        }
+
+        ArrayList<Node> shortestPath = paths.get(0);
+        for(int i=1; i<paths.size(); i++){
+            if(paths.get(i).size() < shortestPath.size()){
+                shortestPath = paths.get(i);
+            }
+        }
+
+        Stack<Node> nearestRegistryPath = new Stack<Node>();
+        /*for(Node node : shortestPath){
+            nearestRegistryPath.push(node);
+        }*/
+
+        for(int i = shortestPath.size()-1; i >= 0; i--){
+            nearestRegistryPath.push(shortestPath.get(i));
+        }
+
+        this.setNearestRegistryPath(nearestRegistryPath);
+    }
+
+    public void goToResgistry(Matrix matrix){
+        if(this.getNearestRegistryPath() == null){
+            this.locateNearestRegistry(matrix);
+        }
+
+        walk(matrix, this.getNearestRegistryPath().pop());
     }
 
     /**
@@ -187,7 +230,7 @@ public class Agent extends Part{
         return favoriteAgent;
     }
 
-    public void walk(Matrix matrix, int[] location){
+    public void walk(Matrix matrix, Node location){
         /**
          * TODO andar verticalmente uma casa, desviar de objetos
          */

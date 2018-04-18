@@ -23,26 +23,29 @@ public class Main {
 
         Matrix matrix= new Matrix(20,20);
 
-        //Instantiate Agents
-        ArrayList<Agent> agents = instantiateAgents(matrix, couplesQuantity, data);
-
         //Instantiate walls
         ArrayList<Wall> walls = instantiateWalls();
+        matrix.setWalls(walls);
 
         //Instantiate registries
         ArrayList<Registry> registries = instantiateRegistries(registriesQuantity, walls);
-
-        //Instatiate matrix
-        matrix.setAgents(agents);
-        matrix.setWalls(walls);
         matrix.setRegistries(registries);
+
+        //Instantiate Agents
+        matrix.update();
+        ArrayList<Agent> agents = instantiateAgents(matrix, couplesQuantity, data);
+        matrix.setAgents(agents);
 
         printMatrix(matrix);
 
-        /*AStar aStar = new AStar(new Node(0,0), new Node(9,9), matrix);
+        agents.get(0).locateNearestRegistry(matrix);
+/*
+        AStar aStar = new AStar(new Node(19,7), new Node(5,5), matrix);
         ArrayList<Node> shortestPath = aStar.findPath();
+        System.out.println("end");
+*/
 
-        matrix.drawShortestPath(shortestPath);
+        /*matrix.drawShortestPath(shortestPath);
         printMatrix(matrix);*/
 
         /*while(true) {
@@ -61,7 +64,7 @@ public class Main {
                 if (agent.getStatus() == Status.HAPPY_MARRIAGE) {
                     agent.walk(matrix);
                 } else if (agent.getStatus() == Status.HAPPY_ENGAGEMENT) {
-                    //walk to registry
+                    agent.goToResgistry(matrix);
                 } else {
                     if (agent.getGender() == 1) {
                         Agent interestingFemaleAgent = agent.observe(matrix);
@@ -106,8 +109,18 @@ public class Main {
         int gender = 0;
 
         int condition = couplesQuantity == 1 ? 2 : couplesQuantity*2;
+        int x,y;
         while (c <= condition){
-            agents.add(new Agent(prefix+n,random.nextInt(matrix.getLines()),random.nextInt(matrix.getColumns()), gender));
+
+            x = random.nextInt(matrix.getLines());
+            y = random.nextInt(matrix.getColumns());
+            /*String coord = matrix.getMatrix().get(y).get(x).getName();
+            while (!coord.equals(matrix.EMPTY_CHAR)){
+                x = random.nextInt(matrix.getLines());
+                y = random.nextInt(matrix.getColumns());
+            }*/
+
+            agents.add(new Agent(prefix+n,x,y, gender));
             c++;
             n++;
             if(c > couplesQuantity && prefix.equals("H")) {
