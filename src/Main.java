@@ -38,6 +38,8 @@ public class Main {
 
         printMatrix(matrix);
 
+        run(matrix,agents);
+
 /*
         Agent a1 = agents.get(0);
         Agent a2 = agents.get(3);
@@ -66,7 +68,7 @@ public class Main {
         //run(matrix,agents,registries);
     }
 
-    public static void run(Matrix matrix, ArrayList<Agent> agents, ArrayList<Registry> registries){
+    public static void run(Matrix matrix, ArrayList<Agent> agents){
         for(Agent agent : agents){
             if(agent.getIntention() == null) {
                 if (agent.getStatus() == Status.HAPPY_MARRIAGE) {
@@ -75,31 +77,64 @@ public class Main {
                     agent.goToResgistry(matrix);
                 } else {
                     if (agent.getGender() == 1) {
-                        Agent interestingFemaleAgent = agent.observe(matrix);
-                        int[] coord1 = {agent.getX(), agent.getY()};
-                        int[] coord2 = {interestingFemaleAgent.getX(), interestingFemaleAgent.getY()};
-                        if (matrix.isCloser(coord1, coord2)) {
-                            /*TODO female agent has to decide*/
-                            if (agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
-                                //engage
-                            } else {
-                                //locate nearest registry
-                                //set intention to all involved agents
-                            }
-                        } else {
-                            //get closer
-                        }
+                        Agent interestingFemaleAgent = agent.lookForAgent(matrix);
+                        if(interestingFemaleAgent != null) {
+                            int[] coord1 = {agent.getX(), agent.getY()};
+                            int[] coord2 = {interestingFemaleAgent.getX(), interestingFemaleAgent.getY()};
 
+                            if (matrix.isCloser(coord1, coord2)) {
+                                if(interestingFemaleAgent.isInterestedIn(agent)) {
+                                    if (agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
+                                        agent.engage(interestingFemaleAgent);
+                                    } else {
+                                        agent.locateNearestRegistry(matrix);
+                                        agent.setInterest(interestingFemaleAgent);
+                                        agent.setIntention(Intention.GO_REGISTRY_SEPARATE);
+
+                                        interestingFemaleAgent.setNearestRegistryPath(agent.getNearestRegistryPath());
+                                        interestingFemaleAgent.setInterest(agent);
+                                        interestingFemaleAgent.setIntention(Intention.GO_REGISTRY_SEPARATE);
+
+                                        interestingFemaleAgent.getSpouse().setNearestRegistryPath(agent.getNearestRegistryPath());
+                                        interestingFemaleAgent.getSpouse().setIntention(Intention.GO_REGISTRY_SEPARATE);
+                                    }
+                                }
+                            } else {
+                                agent.walk(matrix, new Node(interestingFemaleAgent.getX(), interestingFemaleAgent.getY()));
+                            }
+                        }else{
+                            agent.walk(matrix);
+                        }
                     } else {
                         agent.walk(matrix);
                     }
                 }
             }else{
-                //deal with the agents intentions
-            }
-        }
 
-        printMatrix(matrix);
+                if(agent.getIntention() == Intention.GO_REGISTRY_MARRY){
+                    Registry registry = agent.lookForRegistry(matrix);
+                    if(registry == null){
+                        agent.goToResgistry(matrix);
+                    }else{
+                        agent.setNearestRegistryPath(null);
+                        agent.marry();
+                    }
+
+                }else if(agent.getIntention() == Intention.GO_REGISTRY_SEPARATE){
+                    Registry registry = agent.lookForRegistry(matrix);
+                    if(registry == null){
+                        agent.goToResgistry(matrix);
+                    }else{
+                        agent.setNearestRegistryPath(null);
+                        agent.divorce();
+                        agent.marry();
+                    }
+
+                }
+
+            }
+            printMatrix(matrix);
+        }
     }
 
     public static void clear(){
@@ -114,7 +149,7 @@ public class Main {
         String prefix = "H";
         int c = 1;
         int n = 1;
-        int gender = 0;
+        int gender = 1;
 
         int condition = couplesQuantity == 1 ? 2 : couplesQuantity*2;
         int x,y;
@@ -132,7 +167,7 @@ public class Main {
             c++;
             n++;
             if(c > couplesQuantity && prefix.equals("H")) {
-                gender = 1;
+                gender = 0;
                 n = 1;
                 prefix = "M";
             }
