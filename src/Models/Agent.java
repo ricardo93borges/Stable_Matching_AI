@@ -208,10 +208,6 @@ public class Agent extends Part{
             }
         }
 
-        /**
-         * TODO verificar se os agents encontrados estão na lista de preferencias e escolher o com prioridade mais alta
-         */
-
         Agent favoriteAgent = null;
         if(agents.size() > 0) {
             favoriteAgent = agents.get(0);
@@ -292,15 +288,56 @@ public class Agent extends Part{
         this.setY(y);
     }
 
-
-
     public void engage(Agent agent){
         this.setFiance(agent);
         this.setInterest(null);
 
-        if(agent.getFiance() != null && !agent.getFiance().getName().equals(this.getName())){
-            agent.engage(this);
-            agent.setInterest(null);
+        if(agent.getFiance() == null) {
+
+                //Update female agent
+                agent.setIntention(Intention.GO_REGISTRY_MARRY);
+                agent.setInterest(null);
+                agent.setFiance(this);
+                agent.setStatus(Status.HAPPY_ENGAGEMENT);
+
+                //Update male agent
+                this.setIntention(Intention.GO_REGISTRY_MARRY);
+                this.setInterest(null);
+                this.setFiance(agent);
+                this.setStatus(Status.HAPPY_ENGAGEMENT);
+
+        }else{
+            int currentFiancePriority = 0;
+            int newFiancePriority = 0;
+
+            for (Integer key : agent.getPreference().keySet()) {
+                if(agent.getPreference().get(key).getName().equals(agent.getFiance().getName())){
+                    currentFiancePriority = key;
+                }else if(agent.getPreference().get(key).getName().equals(this.getName())){
+                    newFiancePriority = key;
+                }
+            }
+
+            if(newFiancePriority < currentFiancePriority){
+                //Update current fiance
+                agent.getFiance().setIntention(null);
+                agent.getFiance().setInterest(null);
+                agent.getFiance().setFiance(null);
+                agent.getFiance().setStatus(Status.SINGLE);
+
+                //Update female agent
+                agent.setIntention(Intention.GO_REGISTRY_MARRY);
+                agent.setInterest(null);
+                agent.setFiance(this);
+                agent.setStatus(Status.HAPPY_ENGAGEMENT);
+
+                //Update male agent
+                this.setIntention(Intention.GO_REGISTRY_MARRY);
+                this.setInterest(null);
+                this.setFiance(agent);
+                this.setStatus(Status.HAPPY_ENGAGEMENT);
+            }
+
         }
     }
 

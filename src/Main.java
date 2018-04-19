@@ -38,7 +38,15 @@ public class Main {
 
         printMatrix(matrix);
 
-        agents.get(0).locateNearestRegistry(matrix);
+/*
+        Agent a1 = agents.get(0);
+        Agent a2 = agents.get(3);
+        Agent a3 = agents.get(1);
+        a1.engage(a2);
+        a3.engage(a2);
+*/
+
+        //agents.get(0).locateNearestRegistry(matrix);
 /*
         AStar aStar = new AStar(new Node(19,7), new Node(5,5), matrix);
         ArrayList<Node> shortestPath = aStar.findPath();
@@ -143,7 +151,7 @@ public class Main {
             Agent agent = Agent.findAgentByName(agents, prefixAgent+l[0]);
             HashMap<Integer, Agent> preference = new HashMap<Integer, Agent>();
 
-            for(int j=1; j < l.length; j++){
+            for(int j=l.length-1; j >= 1; j--){
                 Agent a = Agent.findAgentByName(agents, prefixPreference+l[j]);
                 preference.put(j, a);
             }
