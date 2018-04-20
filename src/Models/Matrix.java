@@ -127,28 +127,36 @@ public class Matrix {
             this.matrix.add(line);
         }
 
-        for(int i=0; i<this.walls.size(); i++){
-            Wall w = this.walls.get(i);
-            for(int j=0; j<w.getLength(); j++) {
-                this.matrix.get(w.getY()+j).set(w.getX(), w);
+        if(this.walls != null) {
+            for (int i = 0; i < this.walls.size(); i++) {
+                Wall w = this.walls.get(i);
+                for (int j = 0; j < w.getLength(); j++) {
+                    this.matrix.get(w.getY() + j).set(w.getX(), w);
+                }
             }
         }
 
-        for(int i=0; i<this.registries.size(); i++){
-            Registry r = this.registries.get(i);
-            this.matrix.get(r.getY()).set(r.getX(),r);
+        if(this.registries != null) {
+            for (int i = 0; i < this.registries.size(); i++) {
+                Registry r = this.registries.get(i);
+                this.matrix.get(r.getY()).set(r.getX(), r);
+            }
         }
 
         if(this.agents != null) {
-            for (int i = 0; i < this.agents.size(); i++) {
-                Agent a = this.agents.get(i);
-                this.matrix.get(a.getY()).set(a.getX(), a);
+            if (this.agents != null) {
+                for (int i = 0; i < this.agents.size(); i++) {
+                    Agent a = this.agents.get(i);
+                    this.matrix.get(a.getY()).set(a.getX(), a);
+                }
             }
         }
 
-        for(int i=0; i<this.couples.size(); i++){
-            Couple c = this.couples.get(i);
-            this.matrix.get(c.getY()).set(c.getX(),c);
+        if(this.couples != null) {
+            for (int i = 0; i < this.couples.size(); i++) {
+                Couple c = this.couples.get(i);
+                this.matrix.get(c.getY()).set(c.getX(), c);
+            }
         }
     }
 

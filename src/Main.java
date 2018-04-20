@@ -14,22 +14,22 @@ public class Main {
         Reader reader = new Reader();
 
         //Read
-        ArrayList<String[]> data = reader.readCsv("data.csv", " ");
+        ArrayList<String[]> data = reader.readCsv("data2.csv", " ");
 
         //Get couples and registries
         String[] line = data.get(0);
         int couplesQuantity = Integer.parseInt(line[0]);
         int registriesQuantity = Integer.parseInt(line[1]);
 
-        Matrix matrix= new Matrix(20,20);
+        Matrix matrix= new Matrix(5,5);
 
         //Instantiate walls
-        ArrayList<Wall> walls = instantiateWalls();
-        matrix.setWalls(walls);
+        /*ArrayList<Wall> walls = instantiateWalls();
+        matrix.setWalls(walls);*/
 
         //Instantiate registries
-        ArrayList<Registry> registries = instantiateRegistries(registriesQuantity, walls);
-        matrix.setRegistries(registries);
+        /*ArrayList<Registry> registries = instantiateRegistries(registriesQuantity, walls);
+        matrix.setRegistries(registries);*/
 
         //Instantiate Agents
         matrix.update();
@@ -69,71 +69,71 @@ public class Main {
     }
 
     public static void run(Matrix matrix, ArrayList<Agent> agents){
-        for(Agent agent : agents){
-            if(agent.getIntention() == null) {
-                if (agent.getStatus() == Status.HAPPY_MARRIAGE) {
-                    agent.walk(matrix);
-                } else if (agent.getStatus() == Status.HAPPY_ENGAGEMENT) {
-                    agent.goToResgistry(matrix);
-                } else {
-                    if (agent.getGender() == 1) {
-                        Agent interestingFemaleAgent = agent.lookForAgent(matrix);
-                        if(interestingFemaleAgent != null) {
-                            int[] coord1 = {agent.getX(), agent.getY()};
-                            int[] coord2 = {interestingFemaleAgent.getX(), interestingFemaleAgent.getY()};
+        while (true) {
+            for (Agent agent : agents) {
+                if (agent.getIntention() == null) {
+                    if (agent.getStatus() == Status.HAPPY_MARRIAGE) {
+                        agent.walk(matrix);
+                    } else if (agent.getStatus() == Status.HAPPY_ENGAGEMENT) {
+                        agent.goToResgistry(matrix);
+                    } else {
+                        if (agent.getGender() == 1) {
+                            Agent interestingFemaleAgent = agent.lookForAgent(matrix);
+                            if (interestingFemaleAgent != null) {
+                                int[] coord1 = {agent.getX(), agent.getY()};
+                                int[] coord2 = {interestingFemaleAgent.getX(), interestingFemaleAgent.getY()};
 
-                            if (matrix.isCloser(coord1, coord2)) {
-                                if(interestingFemaleAgent.isInterestedIn(agent)) {
-                                    if (agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
-                                        agent.engage(interestingFemaleAgent);
-                                    } else {
-                                        agent.locateNearestRegistry(matrix);
-                                        agent.setInterest(interestingFemaleAgent);
-                                        agent.setIntention(Intention.GO_REGISTRY_SEPARATE);
+                                if (matrix.isCloser(coord1, coord2)) {
+                                    if (interestingFemaleAgent.isInterestedIn(agent)) {
+                                        if (agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
+                                            agent.engage(interestingFemaleAgent);
+                                        } else {
+                                            agent.locateNearestRegistry(matrix);
+                                            agent.setInterest(interestingFemaleAgent);
+                                            agent.setIntention(Intention.GO_REGISTRY_SEPARATE);
 
-                                        interestingFemaleAgent.setNearestRegistryPath(agent.getNearestRegistryPath());
-                                        interestingFemaleAgent.setInterest(agent);
-                                        interestingFemaleAgent.setIntention(Intention.GO_REGISTRY_SEPARATE);
+                                            interestingFemaleAgent.setNearestRegistryPath(agent.getNearestRegistryPath());
+                                            interestingFemaleAgent.setInterest(agent);
+                                            interestingFemaleAgent.setIntention(Intention.GO_REGISTRY_SEPARATE);
 
-                                        interestingFemaleAgent.getSpouse().setNearestRegistryPath(agent.getNearestRegistryPath());
-                                        interestingFemaleAgent.getSpouse().setIntention(Intention.GO_REGISTRY_SEPARATE);
+                                            interestingFemaleAgent.getSpouse().setNearestRegistryPath(agent.getNearestRegistryPath());
+                                            interestingFemaleAgent.getSpouse().setIntention(Intention.GO_REGISTRY_SEPARATE);
+                                        }
                                     }
+                                } else {
+                                    agent.walk(matrix, new Node(interestingFemaleAgent.getX(), interestingFemaleAgent.getY()));
                                 }
                             } else {
-                                agent.walk(matrix, new Node(interestingFemaleAgent.getX(), interestingFemaleAgent.getY()));
+                                agent.walk(matrix);
                             }
-                        }else{
+                        } else {
                             agent.walk(matrix);
                         }
-                    } else {
-                        agent.walk(matrix);
+                    }
+                } else {
+
+                    if (agent.getIntention() == Intention.GO_REGISTRY_MARRY) {
+                        Registry registry = agent.lookForRegistry(matrix);
+                        if (registry == null) {
+                            agent.goToResgistry(matrix);
+                        } else {
+                            agent.setNearestRegistryPath(null);
+                            agent.marry();
+                        }
+
+                    } else if (agent.getIntention() == Intention.GO_REGISTRY_SEPARATE) {
+                        Registry registry = agent.lookForRegistry(matrix);
+                        if (registry == null) {
+                            agent.goToResgistry(matrix);
+                        } else {
+                            agent.setNearestRegistryPath(null);
+                            agent.divorce();
+                            agent.marry();
+                        }
                     }
                 }
-            }else{
-
-                if(agent.getIntention() == Intention.GO_REGISTRY_MARRY){
-                    Registry registry = agent.lookForRegistry(matrix);
-                    if(registry == null){
-                        agent.goToResgistry(matrix);
-                    }else{
-                        agent.setNearestRegistryPath(null);
-                        agent.marry();
-                    }
-
-                }else if(agent.getIntention() == Intention.GO_REGISTRY_SEPARATE){
-                    Registry registry = agent.lookForRegistry(matrix);
-                    if(registry == null){
-                        agent.goToResgistry(matrix);
-                    }else{
-                        agent.setNearestRegistryPath(null);
-                        agent.divorce();
-                        agent.marry();
-                    }
-
-                }
-
+                printMatrix(matrix);
             }
-            printMatrix(matrix);
         }
     }
 

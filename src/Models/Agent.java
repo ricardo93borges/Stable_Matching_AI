@@ -186,13 +186,17 @@ public class Agent extends Part{
                 {this.getX() - 2, this.getY() - 2},//upper left diagonal
                 {this.getX() + 2, this.getY() - 2},//bottom right diagonal
                 {this.getX() - 2, this.getY() - 2},//bottom left diagonal
+                {this.getX() - 2, this.getY() - 1},
+                {this.getX() + 2, this.getY() - 1},
+                {this.getX() - 2, this.getY() + 1},
+                {this.getX() + 2, this.getY() + 1}
         };
 
         for(int[] spot : spots){
             x = spot[0];
             y = spot[1];
 
-            if(y >= 0 && y <= matrix.getColumns() && x >=0 && x <= matrix.getLines()){
+            if(y >= 0 && y < matrix.getColumns() && x >=0 && x < matrix.getLines()){
                 Part part = m.get(y).get(x);
                 if(part.getClass().equals(this.getClass())){
                     Agent agent = (Agent) part;
@@ -210,7 +214,7 @@ public class Agent extends Part{
 
             for (int i = 1; i < agents.size(); i++) {
                 for (Integer key : this.getPreference().keySet()) {
-                    if (agents.get(i).equals(this.getPreference().get(key)) && key < index) {
+                    if (agents.get(i).getName().equals(this.getPreference().get(key).getName()) && key < index) {
                         favoriteAgent = agents.get(i);
                         index = key;
                     }
@@ -333,17 +337,25 @@ public class Agent extends Part{
 
         if(agent.getFiance() == null) {
 
-                //Update female agent
-                agent.setIntention(Intention.GO_REGISTRY_MARRY);
-                agent.setInterest(null);
-                agent.setFiance(this);
-                agent.setStatus(Status.HAPPY_ENGAGEMENT);
+            //Update female agent
+            agent.setIntention(Intention.GO_REGISTRY_MARRY);
+            agent.setInterest(null);
+            agent.setFiance(this);
 
-                //Update male agent
-                this.setIntention(Intention.GO_REGISTRY_MARRY);
-                this.setInterest(null);
-                this.setFiance(agent);
+            if(agent.isHighPriority(this))
+                agent.setStatus(Status.HAPPY_ENGAGEMENT);
+            else
+                agent.setStatus(Status.UNHAPPY_ENGAGEMENT);
+
+            //Update male agent
+            this.setIntention(Intention.GO_REGISTRY_MARRY);
+            this.setInterest(null);
+            this.setFiance(agent);
+
+            if(this.isHighPriority(agent))
                 this.setStatus(Status.HAPPY_ENGAGEMENT);
+            else
+                this.setStatus(Status.UNHAPPY_ENGAGEMENT);
 
         }else{
 
@@ -358,24 +370,31 @@ public class Agent extends Part{
                 agent.setIntention(Intention.GO_REGISTRY_MARRY);
                 agent.setInterest(null);
                 agent.setFiance(this);
-                agent.setStatus(Status.HAPPY_ENGAGEMENT);
+
+                if(agent.isHighPriority(this))
+                    agent.setStatus(Status.HAPPY_ENGAGEMENT);
+                else
+                    agent.setStatus(Status.UNHAPPY_ENGAGEMENT);
 
                 //Update male agent
                 this.setIntention(Intention.GO_REGISTRY_MARRY);
                 this.setInterest(null);
                 this.setFiance(agent);
-                this.setStatus(Status.HAPPY_ENGAGEMENT);
-            }
 
+                if(this.isHighPriority(agent))
+                    this.setStatus(Status.HAPPY_ENGAGEMENT);
+                else
+                    this.setStatus(Status.UNHAPPY_ENGAGEMENT);
+            }
         }
     }
 
     public boolean isInterestedIn(Agent agent){
-        int currentFiancePriority = 0;
-        int newFiancePriority = 0;
+        int currentFiancePriority = Integer.MAX_VALUE;
+        int newFiancePriority = Integer.MAX_VALUE;
 
         for (Integer key : this.getPreference().keySet()) {
-            if(this.getPreference().get(key).getName().equals(this.getFiance().getName())){
+            if(this.getFiance() != null && this.getPreference().get(key).getName().equals(this.getFiance().getName())){
                 currentFiancePriority = key;
             }else if(this.getPreference().get(key).getName().equals(agent.getName())){
                 newFiancePriority = key;
@@ -388,6 +407,16 @@ public class Agent extends Part{
         return false;
     }
 
+    public boolean isHighPriority(Agent agent){
+        for (Integer key : this.getPreference().keySet()) {
+            if(key == 1){
+                Agent preference = this.getPreference().get(key);
+                return preference.getName().equals(agent.getName());
+            }
+        }
+        return false;
+    }
+
     /**
      * TODO make them walk toghter
      */
@@ -396,13 +425,22 @@ public class Agent extends Part{
         this.setSpouse(this.getInterest());
         this.setInterest(null);
         this.setIntention(null);
-        this.setStatus(Status.HAPPY_MARRIAGE); //TODO review when is a happy marriage
+
+        if(this.isHighPriority(this.getInterest()))
+            this.setStatus(Status.HAPPY_MARRIAGE);
+        else
+            this.setStatus(Status.UNHAPPY_MARRIAGE);
 
         this.getInterest().setFiance(null);
         this.getInterest().setSpouse(this);
         this.getInterest().setInterest(null);
         this.getInterest().setIntention(null);
-        this.getInterest().setStatus(Status.HAPPY_MARRIAGE); //TODO review when is a happy marriage
+        this.getInterest().setStatus(Status.HAPPY_MARRIAGE);
+
+        if(this.getInterest().isHighPriority(this))
+            this.getInterest().setStatus(Status.HAPPY_MARRIAGE);
+        else
+            this.getInterest().setStatus(Status.UNHAPPY_MARRIAGE);
     }
 
     public void divorce(){
