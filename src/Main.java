@@ -80,10 +80,7 @@ public class Main {
                         if (agent.getGender() == 1) {
                             Agent interestingFemaleAgent = agent.lookForAgent(matrix);
                             if (interestingFemaleAgent != null) {
-                                int[] coord1 = {agent.getX(), agent.getY()};
-                                int[] coord2 = {interestingFemaleAgent.getX(), interestingFemaleAgent.getY()};
-
-                                if (matrix.isCloser(coord1, coord2)) {
+                                if (agent.isAgentCloser(matrix, interestingFemaleAgent)) {
                                     if (interestingFemaleAgent.isInterestedIn(agent)) {
                                         if (agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
                                             agent.engage(interestingFemaleAgent);

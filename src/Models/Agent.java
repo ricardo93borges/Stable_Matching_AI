@@ -225,6 +225,38 @@ public class Agent extends Part{
         return favoriteAgent;
     }
 
+    public boolean isAgentCloser(Matrix matrix, Agent agent){
+        ArrayList<ArrayList<Part>> m = matrix.getMatrix();
+        int x,y;
+
+        int[][] spots = {
+                {this.getX(), this.getY() - 1},//top
+                {this.getX(), this.getY() + 1},//bottom
+                {this.getX() + 1, this.getY()},//right
+                {this.getX() - 1, this.getY()},//left
+                {this.getX() + 1, this.getY() + 1},//upper right diagonal
+                {this.getX() - 1, this.getY() - 1},//upper left diagonal
+                {this.getX() + 1, this.getY() - 1},//bottom right diagonal
+                {this.getX() - 1, this.getY() - 1},//bottom left diagonal
+        };
+
+        for(int[] spot : spots){
+            x = spot[0];
+            y = spot[1];
+
+            if(y >= 0 && y < matrix.getColumns() && x >=0 && x < matrix.getLines()){
+                Part part = m.get(y).get(x);
+                if(part.getClass().equals(this.getClass())){
+                    Agent a = (Agent) part;
+                    if(a.getName().equals(agent.getName())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public Registry lookForRegistry(Matrix matrix){
         ArrayList<Registry> registries = new ArrayList<Registry>();
         ArrayList<ArrayList<Part>> m = matrix.getMatrix();
