@@ -10,7 +10,7 @@ public class Node implements Comparable<Node>{
     public Node(int x, int y) {
         this.x = x;
         this.y = y;
-        this.id = Integer.toString(x+y);
+        this.id = "n"+x+""+y;
         this.value = 1;
     }
 

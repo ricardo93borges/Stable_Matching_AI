@@ -49,11 +49,8 @@ public class AStar {
     }
 
     public HashMap<String, Node> astar(){
-        //System.out.println("Ori: "+this.getOrigin().getX()+","+this.getOrigin().getY());
-        //System.out.println("Des: "+this.getDestination().getX()+","+this.getDestination().getY());
-
         ArrayList<String> ids = new ArrayList<String>();
-        PriorityQueue frontier = new PriorityQueue();
+        ArrayList<Node> frontier = new ArrayList<Node>();
         frontier.add(this.origin);
 
         HashMap<String, Node> came_from = new HashMap<String, Node>();
@@ -63,14 +60,14 @@ public class AStar {
         cost_so_far.put(origin.getId(), 0.0);
 
         while(frontier.size() > 0){
-            Node current = (Node) frontier.poll();
+            Node current = (Node) frontier.get(0);
+            frontier.remove(0);
 
-            if(current.getId().equals(this.destination.getId()))
+            if(current.getX() == this.destination.getX() && current.getY() == this.destination.getY())
                 break;
 
             Double d = Double.MAX_VALUE;
             ArrayList<Node> neighbors = getNeighbors(current);
-            //neighbors = new ArrayList<Node>();
 
             for (Node next: neighbors) {
                 double new_cost = 0.0;

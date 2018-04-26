@@ -128,22 +128,30 @@ public class Agent extends Part {
         this.nearestRegistryPath = nearestRegistryPath;
     }
 
+    public void log(String msg){
+        System.out.println(msg);
+    }
+
     public void act(Matrix matrix) {
         if (this.getIntention() == null) {
             if (this.getStatus() == Status.HAPPY_MARRIAGE) {
                 this.walk(matrix);
+                log(this.getName()+" move-se");
             } else if (this.getStatus() == Status.HAPPY_ENGAGEMENT) {
                 this.goToResgistry(matrix);
+                log(this.getName()+" está indo ao cartório");
             } else {
                 if (this.getGender() == 1) {
                     Agent interestingFemaleAgent = this.lookForAgent(matrix);
                     if (interestingFemaleAgent != null) {
+                        log(this.getName()+" está interessado em "+interestingFemaleAgent.getName());
                         if (this.isAgentCloser(matrix, interestingFemaleAgent)) {
                             if (interestingFemaleAgent.isInterestedIn(this)) {
                                 if (this.getStatus() == Status.SINGLE || this.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
                                     this.engage(interestingFemaleAgent);
-                                    System.out.println(this.getName() + "," + interestingFemaleAgent.getName() + " are engaged ");
+                                    log(this.getName() + "," + interestingFemaleAgent.getName() + " estão noivos ");
                                 } else {
+                                    log(interestingFemaleAgent.getName()+" está casada, estão indo para o cartório para divorciar e casar");
                                     this.locateNearestRegistry(matrix);
                                     this.setInterest(interestingFemaleAgent);
                                     this.setIntention(Intention.GO_REGISTRY_SEPARATE);
@@ -155,42 +163,51 @@ public class Agent extends Part {
                                     interestingFemaleAgent.getSpouse().setNearestRegistryPath(this.getNearestRegistryPath());
                                     interestingFemaleAgent.getSpouse().setIntention(Intention.GO_REGISTRY_SEPARATE);
                                 }
+                            }else{
+                                log(interestingFemaleAgent.getName()+" não está interessada em "+this.getName());
                             }
                         } else {
                             this.walk(matrix, new Node(interestingFemaleAgent.getX(), interestingFemaleAgent.getY()));
+                            log(this.getName()+" move-se em direção a "+interestingFemaleAgent.getName());
                         }
                     } else {
                         this.walk(matrix);
+                        log(this.getName()+" move-se");
                     }
                 } else {
                     this.walk(matrix);
+                    log(this.getName()+" move-se");
                 }
             }
         } else {
 
             if (this.getGender() == 0) {
                 this.walk(matrix);
+                log(this.getName()+" move-se");
             } else {
                 if (this.getIntention() == Intention.GO_REGISTRY_MARRY) {
+                    log(this.getName()+" verifica se está perto de um cartório para casar");
                     Registry registry = this.lookForRegistry(matrix);
                     if (registry == null) {
                         this.goToResgistry(matrix);
+                        log(this.getName()+" move-se em direção ao cartório ");
                     } else {
                         this.setNearestRegistryPath(null);
                         this.marry();
-                        System.out.println(this.getName() + "," + this.getSpouse().getName() + " are married ");
+                        log(this.getName() + "," + this.getSpouse().getName() + " estão casados ");
                     }
-
                 } else if (this.getIntention() == Intention.GO_REGISTRY_SEPARATE) {
+                    log(this.getName()+" verifica se está perto de um cartório para divorciar");
                     Registry registry = this.lookForRegistry(matrix);
                     if (registry == null) {
                         this.goToResgistry(matrix);
+                        log(this.getName()+" move-se em direção ao cartório ");
                     } else {
                         this.setNearestRegistryPath(null);
-                        System.out.println(this.getName() + "," + this.getSpouse().getName() + " are divorced ");
+                        log(this.getName() + "," + this.getSpouse().getName() + " estão divorciados ");
                         this.divorce();
                         this.marry();
-                        System.out.println(this.getName() + "," + this.getSpouse().getName() + " are married ");
+                        log(this.getName() + "," + this.getSpouse().getName() + " estão casados ");
                     }
                 }
             }
@@ -230,7 +247,11 @@ public class Agent extends Part {
             this.locateNearestRegistry(matrix);
         }
 
-        walk(matrix, this.getNearestRegistryPath().pop());
+        if(this.getNearestRegistryPath().size() == 0){
+            this.setNearestRegistryPath(null);
+        }else {
+            walk(matrix, this.getNearestRegistryPath().pop());
+        }
     }
 
     public Agent lookForAgent(Matrix matrix) {
@@ -340,13 +361,25 @@ public class Agent extends Part {
                 {this.getX() - 1, this.getY() - 1},//upper left diagonal
                 {this.getX() + 1, this.getY() - 1},//bottom right diagonal
                 {this.getX() - 1, this.getY() - 1},//bottom left diagonal
+                {this.getX(), this.getY() - 2},//top
+                {this.getX(), this.getY() + 2},//bottom
+                {this.getX() + 2, this.getY()},//right
+                {this.getX() - 2, this.getY()},//left
+                {this.getX() + 2, this.getY() + 2},//upper right diagonal
+                {this.getX() - 2, this.getY() - 2},//upper left diagonal
+                {this.getX() + 2, this.getY() - 2},//bottom right diagonal
+                {this.getX() - 2, this.getY() - 2},//bottom left diagonal
+                {this.getX() - 2, this.getY() - 1},
+                {this.getX() + 2, this.getY() - 1},
+                {this.getX() - 2, this.getY() + 1},
+                {this.getX() + 2, this.getY() + 1}
         };
 
         for (int[] spot : spots) {
             x = spot[0];
             y = spot[1];
 
-            if (y >= 0 && y <= matrix.getColumns() && x >= 0 && x <= matrix.getLines()) {
+            if (y >= 0 && y < matrix.getColumns() && x >= 0 && x < matrix.getLines()) {
                 Part part = m.get(y).get(x);
                 if (part.getClass().equals(Registry.class)) {
                     return (Registry) part;

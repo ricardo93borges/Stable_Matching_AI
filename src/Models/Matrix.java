@@ -102,7 +102,6 @@ public class Matrix {
     public boolean isCoordEmpty(int x, int y){
         Part part = this.getMatrix().get(y).get(x);
         if(!part.getName().equals(Matrix.EMPTY_CHAR)) {
-            System.out.println("Not a empty char "+x+","+y+" - "+part.getName());
             return false;
         }
         return true;
@@ -110,7 +109,6 @@ public class Matrix {
 
     public boolean isCoordNullPointer(int x, int y){
         if(y < 0 || y >= this.getColumns() || x < 0 || x >= this.getLines()) {
-            System.out.println("Out matrix "+x+","+y);
             return true;
         }
         return false;
