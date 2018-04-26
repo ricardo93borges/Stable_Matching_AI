@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-public class Agent extends Part{
+public class Agent extends Part {
 
     private int x;
     private int y;
@@ -128,12 +128,81 @@ public class Agent extends Part{
         this.nearestRegistryPath = nearestRegistryPath;
     }
 
-    public void locateNearestRegistry(Matrix matrix){
+    public void act(Matrix matrix) {
+        if (this.getIntention() == null) {
+            if (this.getStatus() == Status.HAPPY_MARRIAGE) {
+                this.walk(matrix);
+            } else if (this.getStatus() == Status.HAPPY_ENGAGEMENT) {
+                this.goToResgistry(matrix);
+            } else {
+                if (this.getGender() == 1) {
+                    Agent interestingFemaleAgent = this.lookForAgent(matrix);
+                    if (interestingFemaleAgent != null) {
+                        if (this.isAgentCloser(matrix, interestingFemaleAgent)) {
+                            if (interestingFemaleAgent.isInterestedIn(this)) {
+                                if (this.getStatus() == Status.SINGLE || this.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
+                                    this.engage(interestingFemaleAgent);
+                                    System.out.println(this.getName() + "," + interestingFemaleAgent.getName() + " are engaged ");
+                                } else {
+                                    this.locateNearestRegistry(matrix);
+                                    this.setInterest(interestingFemaleAgent);
+                                    this.setIntention(Intention.GO_REGISTRY_SEPARATE);
+
+                                    interestingFemaleAgent.setNearestRegistryPath(this.getNearestRegistryPath());
+                                    interestingFemaleAgent.setInterest(this);
+                                    interestingFemaleAgent.setIntention(Intention.GO_REGISTRY_SEPARATE);
+
+                                    interestingFemaleAgent.getSpouse().setNearestRegistryPath(this.getNearestRegistryPath());
+                                    interestingFemaleAgent.getSpouse().setIntention(Intention.GO_REGISTRY_SEPARATE);
+                                }
+                            }
+                        } else {
+                            this.walk(matrix, new Node(interestingFemaleAgent.getX(), interestingFemaleAgent.getY()));
+                        }
+                    } else {
+                        this.walk(matrix);
+                    }
+                } else {
+                    this.walk(matrix);
+                }
+            }
+        } else {
+
+            if (this.getGender() == 0) {
+                this.walk(matrix);
+            } else {
+                if (this.getIntention() == Intention.GO_REGISTRY_MARRY) {
+                    Registry registry = this.lookForRegistry(matrix);
+                    if (registry == null) {
+                        this.goToResgistry(matrix);
+                    } else {
+                        this.setNearestRegistryPath(null);
+                        this.marry();
+                        System.out.println(this.getName() + "," + this.getSpouse().getName() + " are married ");
+                    }
+
+                } else if (this.getIntention() == Intention.GO_REGISTRY_SEPARATE) {
+                    Registry registry = this.lookForRegistry(matrix);
+                    if (registry == null) {
+                        this.goToResgistry(matrix);
+                    } else {
+                        this.setNearestRegistryPath(null);
+                        System.out.println(this.getName() + "," + this.getSpouse().getName() + " are divorced ");
+                        this.divorce();
+                        this.marry();
+                        System.out.println(this.getName() + "," + this.getSpouse().getName() + " are married ");
+                    }
+                }
+            }
+        }
+    }
+
+    public void locateNearestRegistry(Matrix matrix) {
         ArrayList<ArrayList<Node>> paths = new ArrayList<ArrayList<Node>>();
         AStar aStar = new AStar();
         aStar.setMatrix(matrix);
 
-        for(Registry registry : matrix.getRegistries()){
+        for (Registry registry : matrix.getRegistries()) {
             aStar.setOrigin(new Node(this.getX(), this.getY()));
             aStar.setDestination(new Node(registry.getX(), registry.getY()));
             ArrayList<Node> path = aStar.findPath();
@@ -141,33 +210,33 @@ public class Agent extends Part{
         }
 
         ArrayList<Node> shortestPath = paths.get(0);
-        for(int i=1; i<paths.size(); i++){
-            if(paths.get(i).size() < shortestPath.size()){
+        for (int i = 1; i < paths.size(); i++) {
+            if (paths.get(i).size() < shortestPath.size()) {
                 shortestPath = paths.get(i);
             }
         }
 
         Stack<Node> nearestRegistryPath = new Stack<Node>();
 
-        for(int i = shortestPath.size()-1; i >= 0; i--){
+        for (int i = shortestPath.size() - 1; i >= 0; i--) {
             nearestRegistryPath.push(shortestPath.get(i));
         }
 
         this.setNearestRegistryPath(nearestRegistryPath);
     }
 
-    public void goToResgistry(Matrix matrix){
-        if(this.getNearestRegistryPath() == null){
+    public void goToResgistry(Matrix matrix) {
+        if (this.getNearestRegistryPath() == null) {
             this.locateNearestRegistry(matrix);
         }
 
         walk(matrix, this.getNearestRegistryPath().pop());
     }
 
-    public Agent lookForAgent(Matrix matrix){
+    public Agent lookForAgent(Matrix matrix) {
         ArrayList<Agent> agents = new ArrayList<Agent>();
         ArrayList<ArrayList<Part>> m = matrix.getMatrix();
-        int x,y;
+        int x, y;
 
         int[][] spots = {
                 {this.getX(), this.getY() - 1},//top
@@ -192,15 +261,15 @@ public class Agent extends Part{
                 {this.getX() + 2, this.getY() + 1}
         };
 
-        for(int[] spot : spots){
+        for (int[] spot : spots) {
             x = spot[0];
             y = spot[1];
 
-            if(y >= 0 && y < matrix.getColumns() && x >=0 && x < matrix.getLines()){
+            if (y >= 0 && y < matrix.getColumns() && x >= 0 && x < matrix.getLines()) {
                 Part part = m.get(y).get(x);
-                if(part.getClass().equals(this.getClass())){
+                if (part.getClass().equals(this.getClass())) {
                     Agent agent = (Agent) part;
-                    if(agent.getGender() == 0) {
+                    if (agent.getGender() == 0) {
                         agents.add(agent);
                     }
                 }
@@ -208,7 +277,7 @@ public class Agent extends Part{
         }
 
         Agent favoriteAgent = null;
-        if(agents.size() > 0) {
+        if (agents.size() > 0) {
             favoriteAgent = agents.get(0);
             int index = Integer.MAX_VALUE;
 
@@ -225,9 +294,9 @@ public class Agent extends Part{
         return favoriteAgent;
     }
 
-    public boolean isAgentCloser(Matrix matrix, Agent agent){
+    public boolean isAgentCloser(Matrix matrix, Agent agent) {
         ArrayList<ArrayList<Part>> m = matrix.getMatrix();
-        int x,y;
+        int x, y;
 
         int[][] spots = {
                 {this.getX(), this.getY() - 1},//top
@@ -240,15 +309,15 @@ public class Agent extends Part{
                 {this.getX() - 1, this.getY() - 1},//bottom left diagonal
         };
 
-        for(int[] spot : spots){
+        for (int[] spot : spots) {
             x = spot[0];
             y = spot[1];
 
-            if(y >= 0 && y < matrix.getColumns() && x >=0 && x < matrix.getLines()){
+            if (y >= 0 && y < matrix.getColumns() && x >= 0 && x < matrix.getLines()) {
                 Part part = m.get(y).get(x);
-                if(part.getClass().equals(this.getClass())){
+                if (part.getClass().equals(this.getClass())) {
                     Agent a = (Agent) part;
-                    if(a.getName().equals(agent.getName())) {
+                    if (a.getName().equals(agent.getName())) {
                         return true;
                     }
                 }
@@ -257,10 +326,10 @@ public class Agent extends Part{
         return false;
     }
 
-    public Registry lookForRegistry(Matrix matrix){
+    public Registry lookForRegistry(Matrix matrix) {
         ArrayList<Registry> registries = new ArrayList<Registry>();
         ArrayList<ArrayList<Part>> m = matrix.getMatrix();
-        int x,y;
+        int x, y;
 
         int[][] spots = {
                 {this.getX(), this.getY() - 1},//top
@@ -273,13 +342,13 @@ public class Agent extends Part{
                 {this.getX() - 1, this.getY() - 1},//bottom left diagonal
         };
 
-        for(int[] spot : spots){
+        for (int[] spot : spots) {
             x = spot[0];
             y = spot[1];
 
-            if(y >= 0 && y <= matrix.getColumns() && x >=0 && x <= matrix.getLines()){
+            if (y >= 0 && y <= matrix.getColumns() && x >= 0 && x <= matrix.getLines()) {
                 Part part = m.get(y).get(x);
-                if(part.getClass().equals(Registry.class)){
+                if (part.getClass().equals(Registry.class)) {
                     return (Registry) part;
                 }
             }
@@ -288,7 +357,7 @@ public class Agent extends Part{
         return null;
     }
 
-    public void walk(Matrix matrix, Node location){
+    public void walk(Matrix matrix, Node location) {
         AStar aStar = new AStar();
         aStar.setMatrix(matrix);
 
@@ -298,7 +367,7 @@ public class Agent extends Part{
 
         Stack<Node> nearestPath = new Stack<Node>();
 
-        for(int i = path.size()-1; i >= 0; i--){
+        for (int i = path.size() - 1; i >= 0; i--) {
             nearestPath.push(path.get(i));
         }
 
@@ -307,7 +376,7 @@ public class Agent extends Part{
         this.setY(n.getY());
     }
 
-    public int walkDefineX(Matrix matrix){
+    public int walkDefineX(Matrix matrix) {
         int x = this.getX();
         int y = this.getY();
         if (this.getGoingX() == 0) {
@@ -327,26 +396,26 @@ public class Agent extends Part{
         return x;
     }
 
-    public void walk(Matrix matrix){
+    public void walk(Matrix matrix) {
         int x = this.getX();
         int y = this.getY();
 
         //Define y
-        if(this.getGoingY() == 1){
-            y = this.getY()-1;//Walk up
-            if(!matrix.isCoordValid(x,y)){
+        if (this.getGoingY() == 1) {
+            y = this.getY() - 1;//Walk up
+            if (!matrix.isCoordValid(x, y)) {
 
-                if(matrix.isCoordNullPointer(x,y))
+                if (matrix.isCoordNullPointer(x, y))
                     this.setGoingY(0);
 
                 y = this.getY();
                 x = this.walkDefineX(matrix);
             }
-        }else{
-            y = this.getY()+1;//Walk down
-            if(!matrix.isCoordValid(x,y)){
+        } else {
+            y = this.getY() + 1;//Walk down
+            if (!matrix.isCoordValid(x, y)) {
 
-                if(matrix.isCoordNullPointer(x,y))
+                if (matrix.isCoordNullPointer(x, y))
                     this.setGoingY(1);
 
                 y = this.getY();
@@ -354,7 +423,7 @@ public class Agent extends Part{
             }
         }
 
-        if(!matrix.isCoordValid(x,y)){
+        if (!matrix.isCoordValid(x, y)) {
             y = this.getY();
             x = this.getX();
         }
@@ -363,18 +432,18 @@ public class Agent extends Part{
         this.setY(y);
     }
 
-    public void engage(Agent agent){
+    public void engage(Agent agent) {
         this.setFiance(agent);
         this.setInterest(null);
 
-        if(agent.getFiance() == null) {
+        if (agent.getFiance() == null) {
 
             //Update female agent
             agent.setIntention(Intention.GO_REGISTRY_MARRY);
             agent.setInterest(null);
             agent.setFiance(this);
 
-            if(agent.isHighPriority(this))
+            if (agent.isHighPriority(this))
                 agent.setStatus(Status.HAPPY_ENGAGEMENT);
             else
                 agent.setStatus(Status.UNHAPPY_ENGAGEMENT);
@@ -384,14 +453,14 @@ public class Agent extends Part{
             this.setInterest(null);
             this.setFiance(agent);
 
-            if(this.isHighPriority(agent))
+            if (this.isHighPriority(agent))
                 this.setStatus(Status.HAPPY_ENGAGEMENT);
             else
                 this.setStatus(Status.UNHAPPY_ENGAGEMENT);
 
-        }else{
+        } else {
 
-            if(agent.isInterestedIn(this)){
+            if (agent.isInterestedIn(this)) {
                 //Update current fiance
                 agent.getFiance().setIntention(null);
                 agent.getFiance().setInterest(null);
@@ -403,7 +472,7 @@ public class Agent extends Part{
                 agent.setInterest(null);
                 agent.setFiance(this);
 
-                if(agent.isHighPriority(this))
+                if (agent.isHighPriority(this))
                     agent.setStatus(Status.HAPPY_ENGAGEMENT);
                 else
                     agent.setStatus(Status.UNHAPPY_ENGAGEMENT);
@@ -413,7 +482,7 @@ public class Agent extends Part{
                 this.setInterest(null);
                 this.setFiance(agent);
 
-                if(this.isHighPriority(agent))
+                if (this.isHighPriority(agent))
                     this.setStatus(Status.HAPPY_ENGAGEMENT);
                 else
                     this.setStatus(Status.UNHAPPY_ENGAGEMENT);
@@ -421,27 +490,27 @@ public class Agent extends Part{
         }
     }
 
-    public boolean isInterestedIn(Agent agent){
+    public boolean isInterestedIn(Agent agent) {
         int currentFiancePriority = Integer.MAX_VALUE;
         int newFiancePriority = Integer.MAX_VALUE;
 
         for (Integer key : this.getPreference().keySet()) {
-            if(this.getFiance() != null && this.getPreference().get(key).getName().equals(this.getFiance().getName())){
+            if (this.getFiance() != null && this.getPreference().get(key).getName().equals(this.getFiance().getName())) {
                 currentFiancePriority = key;
-            }else if(this.getPreference().get(key).getName().equals(agent.getName())){
+            } else if (this.getPreference().get(key).getName().equals(agent.getName())) {
                 newFiancePriority = key;
             }
         }
 
-        if(newFiancePriority < currentFiancePriority)
+        if (newFiancePriority < currentFiancePriority)
             return true;
 
         return false;
     }
 
-    public boolean isHighPriority(Agent agent){
+    public boolean isHighPriority(Agent agent) {
         for (Integer key : this.getPreference().keySet()) {
-            if(key == 1){
+            if (key == 1) {
                 Agent preference = this.getPreference().get(key);
                 return preference.getName().equals(agent.getName());
             }
@@ -452,13 +521,13 @@ public class Agent extends Part{
     /**
      * TODO make them walk toghter
      */
-    public void marry(){
+    public void marry() {
         this.setFiance(null);
         this.setSpouse(this.getInterest());
         this.setInterest(null);
         this.setIntention(null);
 
-        if(this.isHighPriority(this.getInterest()))
+        if (this.isHighPriority(this.getInterest()))
             this.setStatus(Status.HAPPY_MARRIAGE);
         else
             this.setStatus(Status.UNHAPPY_MARRIAGE);
@@ -469,13 +538,13 @@ public class Agent extends Part{
         this.getInterest().setIntention(null);
         this.getInterest().setStatus(Status.HAPPY_MARRIAGE);
 
-        if(this.getInterest().isHighPriority(this))
+        if (this.getInterest().isHighPriority(this))
             this.getInterest().setStatus(Status.HAPPY_MARRIAGE);
         else
             this.getInterest().setStatus(Status.UNHAPPY_MARRIAGE);
     }
 
-    public void divorce(){
+    public void divorce() {
         this.getInterest().getSpouse().setFiance(this);
         this.getInterest().getSpouse().setSpouse(null);
         this.getInterest().getSpouse().setInterest(this);
@@ -489,9 +558,9 @@ public class Agent extends Part{
         this.getInterest().setStatus(Status.SINGLE);
     }
 
-    public static Agent findAgentByName(ArrayList<Agent> agents, String name){
-        for (Agent agent : agents){
-            if(agent.getName().equals(name)){
+    public static Agent findAgentByName(ArrayList<Agent> agents, String name) {
+        for (Agent agent : agents) {
+            if (agent.getName().equals(name)) {
                 return agent;
             }
         }

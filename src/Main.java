@@ -68,75 +68,18 @@ public class Main {
         //run(matrix,agents,registries);
     }
 
+    public static boolean existSingleAgent(ArrayList<Agent> agents){
+        for (Agent agent : agents) {
+            if(agent.getStatus() == Status.SINGLE)
+                return true;
+        }
+        return false;
+    }
+
     public static void run(Matrix matrix, ArrayList<Agent> agents){
-        while (true) {
+        while (existSingleAgent(agents)) {
             for (Agent agent : agents) {
-                if (agent.getIntention() == null) {
-                    if (agent.getStatus() == Status.HAPPY_MARRIAGE) {
-                        agent.walk(matrix);
-                    } else if (agent.getStatus() == Status.HAPPY_ENGAGEMENT) {
-                        agent.goToResgistry(matrix);
-                    } else {
-                        if (agent.getGender() == 1) {
-                            Agent interestingFemaleAgent = agent.lookForAgent(matrix);
-                            if (interestingFemaleAgent != null) {
-                                if (agent.isAgentCloser(matrix, interestingFemaleAgent)) {
-                                    if (interestingFemaleAgent.isInterestedIn(agent)) {
-                                        if (agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
-                                            agent.engage(interestingFemaleAgent);
-                                            System.out.println(agent.getName()+","+interestingFemaleAgent.getName()+" are engaged ");
-                                        } else {
-                                            agent.locateNearestRegistry(matrix);
-                                            agent.setInterest(interestingFemaleAgent);
-                                            agent.setIntention(Intention.GO_REGISTRY_SEPARATE);
-
-                                            interestingFemaleAgent.setNearestRegistryPath(agent.getNearestRegistryPath());
-                                            interestingFemaleAgent.setInterest(agent);
-                                            interestingFemaleAgent.setIntention(Intention.GO_REGISTRY_SEPARATE);
-
-                                            interestingFemaleAgent.getSpouse().setNearestRegistryPath(agent.getNearestRegistryPath());
-                                            interestingFemaleAgent.getSpouse().setIntention(Intention.GO_REGISTRY_SEPARATE);
-                                        }
-                                    }
-                                } else {
-                                    agent.walk(matrix, new Node(interestingFemaleAgent.getX(), interestingFemaleAgent.getY()));
-                                }
-                            } else {
-                                agent.walk(matrix);
-                            }
-                        } else {
-                            agent.walk(matrix);
-                        }
-                    }
-                } else {
-
-                    if(agent.getGender() == 0){
-                        agent.walk(matrix);
-                    }else {
-                        if (agent.getIntention() == Intention.GO_REGISTRY_MARRY) {
-                            Registry registry = agent.lookForRegistry(matrix);
-                            if (registry == null) {
-                                agent.goToResgistry(matrix);
-                            } else {
-                                agent.setNearestRegistryPath(null);
-                                agent.marry();
-                                System.out.println(agent.getName() + "," + agent.getSpouse().getName() + " are married ");
-                            }
-
-                        } else if (agent.getIntention() == Intention.GO_REGISTRY_SEPARATE) {
-                            Registry registry = agent.lookForRegistry(matrix);
-                            if (registry == null) {
-                                agent.goToResgistry(matrix);
-                            } else {
-                                agent.setNearestRegistryPath(null);
-                                System.out.println(agent.getName() + "," + agent.getSpouse().getName() + " are divorced ");
-                                agent.divorce();
-                                agent.marry();
-                                System.out.println(agent.getName() + "," + agent.getSpouse().getName() + " are married ");
-                            }
-                        }
-                    }
-                }
+                agent.act(matrix);
             }
             printMatrix(matrix);
         }
