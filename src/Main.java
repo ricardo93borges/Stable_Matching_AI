@@ -70,9 +70,10 @@ public class Main {
 
     public static boolean existSingleAgent(ArrayList<Agent> agents){
         for (Agent agent : agents) {
-            if(agent.getStatus() == Status.SINGLE)
+            if(agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.HAPPY_ENGAGEMENT || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT)
                 return true;
         }
+        System.out.println("Todos os agentes estão casados");
         return false;
     }
 

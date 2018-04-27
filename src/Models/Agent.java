@@ -136,7 +136,7 @@ public class Agent extends Part {
         if (this.getIntention() == null) {
             if (this.getStatus() == Status.HAPPY_MARRIAGE) {
                 this.walk(matrix);
-                log(this.getName()+" move-se");
+                log(this.getName()+" move-se [1]");
             } else if (this.getStatus() == Status.HAPPY_ENGAGEMENT) {
                 this.goToResgistry(matrix);
                 log(this.getName()+" está indo ao cartório");
@@ -147,7 +147,7 @@ public class Agent extends Part {
                         log(this.getName()+" está interessado em "+interestingFemaleAgent.getName());
                         if (this.isAgentCloser(matrix, interestingFemaleAgent)) {
                             if (interestingFemaleAgent.isInterestedIn(this)) {
-                                if (this.getStatus() == Status.SINGLE || this.getStatus() == Status.UNHAPPY_ENGAGEMENT) {
+                                if (this.getStatus() == Status.SINGLE || this.getStatus() == Status.UNHAPPY_ENGAGEMENT || this.getStatus() == Status.HAPPY_ENGAGEMENT) {
                                     this.engage(interestingFemaleAgent);
                                     log(this.getName() + "," + interestingFemaleAgent.getName() + " estão noivos ");
                                 } else {
@@ -160,8 +160,10 @@ public class Agent extends Part {
                                     interestingFemaleAgent.setInterest(this);
                                     interestingFemaleAgent.setIntention(Intention.GO_REGISTRY_SEPARATE);
 
-                                    interestingFemaleAgent.getSpouse().setNearestRegistryPath(this.getNearestRegistryPath());
-                                    interestingFemaleAgent.getSpouse().setIntention(Intention.GO_REGISTRY_SEPARATE);
+                                    if(interestingFemaleAgent.getSpouse() != null) {
+                                        interestingFemaleAgent.getSpouse().setNearestRegistryPath(this.getNearestRegistryPath());
+                                        interestingFemaleAgent.getSpouse().setIntention(Intention.GO_REGISTRY_SEPARATE);
+                                    }
                                 }
                             }else{
                                 log(interestingFemaleAgent.getName()+" não está interessada em "+this.getName());
@@ -172,18 +174,18 @@ public class Agent extends Part {
                         }
                     } else {
                         this.walk(matrix);
-                        log(this.getName()+" move-se");
+                        log(this.getName()+" move-se [2]");
                     }
                 } else {
                     this.walk(matrix);
-                    log(this.getName()+" move-se");
+                    log(this.getName()+" move-se [3]");
                 }
             }
         } else {
 
             if (this.getGender() == 0) {
                 this.walk(matrix);
-                log(this.getName()+" move-se");
+                log(this.getName()+" move-se [4]");
             } else {
                 if (this.getIntention() == Intention.GO_REGISTRY_MARRY) {
                     log(this.getName()+" verifica se está perto de um cartório para casar");
@@ -466,9 +468,6 @@ public class Agent extends Part {
     }
 
     public void engage(Agent agent) {
-        this.setFiance(agent);
-        this.setInterest(null);
-
         if (agent.getFiance() == null) {
 
             //Update female agent
@@ -545,7 +544,9 @@ public class Agent extends Part {
         for (Integer key : this.getPreference().keySet()) {
             if (key == 1) {
                 Agent preference = this.getPreference().get(key);
-                return preference.getName().equals(agent.getName());
+                String preferenceName = preference.getName();
+                return preferenceName.equals(agent.getName());
+                //return preference.getName().equals(agent.getName());
             }
         }
         return false;
@@ -555,40 +556,42 @@ public class Agent extends Part {
      * TODO make them walk toghter
      */
     public void marry() {
-        this.setFiance(null);
-        this.setSpouse(this.getInterest());
-        this.setInterest(null);
-        this.setIntention(null);
 
-        if (this.isHighPriority(this.getInterest()))
+        if (this.isHighPriority(this.getFiance()))
             this.setStatus(Status.HAPPY_MARRIAGE);
         else
             this.setStatus(Status.UNHAPPY_MARRIAGE);
 
-        this.getInterest().setFiance(null);
-        this.getInterest().setSpouse(this);
-        this.getInterest().setInterest(null);
-        this.getInterest().setIntention(null);
-        this.getInterest().setStatus(Status.HAPPY_MARRIAGE);
+        this.getFiance().setFiance(null);
+        this.getFiance().setSpouse(this);
+        this.getFiance().setInterest(null);
+        this.getFiance().setIntention(null);
+        this.getFiance().setStatus(Status.HAPPY_MARRIAGE);
 
-        if (this.getInterest().isHighPriority(this))
-            this.getInterest().setStatus(Status.HAPPY_MARRIAGE);
+        if (this.getFiance().isHighPriority(this))
+            this.getFiance().setStatus(Status.HAPPY_MARRIAGE);
         else
-            this.getInterest().setStatus(Status.UNHAPPY_MARRIAGE);
+            this.getFiance().setStatus(Status.UNHAPPY_MARRIAGE);
+
+        this.setSpouse(this.getFiance());
+        this.setFiance(null);
+        this.setInterest(null);
+        this.setIntention(null);
     }
 
     public void divorce() {
         this.getInterest().getSpouse().setFiance(this);
         this.getInterest().getSpouse().setSpouse(null);
-        this.getInterest().getSpouse().setInterest(this);
         this.getInterest().getSpouse().setIntention(null);
         this.getInterest().getSpouse().setStatus(Status.SINGLE);
 
         this.getInterest().setFiance(this);
-        this.getInterest().setSpouse(null);
-        this.getInterest().setInterest(this);
         this.getInterest().setIntention(null);
         this.getInterest().setStatus(Status.SINGLE);
+
+        this.getInterest().getSpouse().setInterest(this);
+        this.getInterest().setSpouse(null);
+        this.getInterest().setInterest(this);
     }
 
     public static Agent findAgentByName(ArrayList<Agent> agents, String name) {
