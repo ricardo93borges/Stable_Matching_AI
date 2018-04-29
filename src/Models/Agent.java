@@ -21,6 +21,8 @@ public class Agent extends Part {
     private int goingX;//1 = right, 0 = left
     private int goingY;//1 = up, 0 = down
     private Stack<Node> nearestRegistryPath;
+    private ArrayList<Agent> rejectedBy = new ArrayList<Agent>();
+    private ArrayList<Registry> visitedRegistries = new ArrayList<Registry>();
 
     public Agent(String name, int x, int y, int gender) {
         super(name);
@@ -128,6 +130,22 @@ public class Agent extends Part {
         this.nearestRegistryPath = nearestRegistryPath;
     }
 
+    public ArrayList<Agent> getRejectedBy() {
+        return rejectedBy;
+    }
+
+    public void setRejectedBy(ArrayList<Agent> rejectedBy) {
+        this.rejectedBy = rejectedBy;
+    }
+
+    public ArrayList<Registry> getVisitedRegistries() {
+        return visitedRegistries;
+    }
+
+    public void setVisitedRegistries(ArrayList<Registry> visitedRegistries) {
+        this.visitedRegistries = visitedRegistries;
+    }
+
     public void log(String msg){
         System.out.println(msg);
     }
@@ -136,10 +154,10 @@ public class Agent extends Part {
         if (this.getIntention() == null) {
             if (this.getStatus() == Status.HAPPY_MARRIAGE) {
                 this.walk(matrix);
-                log(this.getName()+" move-se [1]");
+               // log(this.getName()+" move-se [1]");
             } else if (this.getStatus() == Status.HAPPY_ENGAGEMENT) {
                 this.goToResgistry(matrix);
-                log(this.getName()+" está indo ao cartório");
+                //log(this.getName()+" está indo ao cartório");
             } else {
                 if (this.getGender() == 1) {
                     Agent interestingFemaleAgent = this.lookForAgent(matrix);
@@ -151,7 +169,7 @@ public class Agent extends Part {
                                     this.engage(interestingFemaleAgent);
                                     log(this.getName() + "," + interestingFemaleAgent.getName() + " estão noivos ");
                                 } else {
-                                    log(interestingFemaleAgent.getName()+" está casada, estão indo para o cartório para divorciar e casar");
+                                    //log(interestingFemaleAgent.getName()+" está casada, estão indo para o cartório para divorciar e casar");
                                     this.locateNearestRegistry(matrix);
                                     this.setInterest(interestingFemaleAgent);
                                     this.setIntention(Intention.GO_REGISTRY_SEPARATE);
@@ -160,92 +178,107 @@ public class Agent extends Part {
                                     interestingFemaleAgent.setInterest(this);
                                     interestingFemaleAgent.setIntention(Intention.GO_REGISTRY_SEPARATE);
 
-                                    if(interestingFemaleAgent.getSpouse() != null) {
+                                    /*if(interestingFemaleAgent.getSpouse() != null) {
                                         interestingFemaleAgent.getSpouse().setNearestRegistryPath(this.getNearestRegistryPath());
                                         interestingFemaleAgent.getSpouse().setIntention(Intention.GO_REGISTRY_SEPARATE);
-                                    }
+                                    }*/
                                 }
                             }else{
                                 log(interestingFemaleAgent.getName()+" não está interessada em "+this.getName());
                             }
                         } else {
                             this.walk(matrix, new Node(interestingFemaleAgent.getX(), interestingFemaleAgent.getY()));
-                            log(this.getName()+" move-se em direção a "+interestingFemaleAgent.getName());
+                            //log(this.getName()+" move-se em direção a "+interestingFemaleAgent.getName());
                         }
                     } else {
                         this.walk(matrix);
-                        log(this.getName()+" move-se [2]");
+                        //log(this.getName()+" move-se [2]");
                     }
                 } else {
                     this.walk(matrix);
-                    log(this.getName()+" move-se [3]");
+                    //log(this.getName()+" move-se [3]");
                 }
             }
         } else {
-
-            if (this.getGender() == 0) {
-                this.walk(matrix);
-                log(this.getName()+" move-se [4]");
-            } else {
-                if (this.getIntention() == Intention.GO_REGISTRY_MARRY) {
-                    log(this.getName()+" verifica se está perto de um cartório para casar");
-                    Registry registry = this.lookForRegistry(matrix);
-                    if (registry == null) {
-                        this.goToResgistry(matrix);
-                        log(this.getName()+" move-se em direção ao cartório ");
-                    } else {
+            if (this.getIntention() == Intention.GO_REGISTRY_MARRY) {
+                //log(this.getName()+" verifica se está perto de um cartório para casar");
+                Registry registry = this.lookForRegistry(matrix);
+                if (registry == null) {
+                    this.goToResgistry(matrix);
+                    //log(this.getName()+" move-se em direção ao cartório ");
+                } else {
+                    if(this.getGender() == 1) {
                         this.setNearestRegistryPath(null);
                         this.marry();
                         log(this.getName() + "," + this.getSpouse().getName() + " estão casados ");
                     }
-                } else if (this.getIntention() == Intention.GO_REGISTRY_SEPARATE) {
-                    log(this.getName()+" verifica se está perto de um cartório para divorciar");
-                    Registry registry = this.lookForRegistry(matrix);
-                    if (registry == null) {
-                        this.goToResgistry(matrix);
-                        log(this.getName()+" move-se em direção ao cartório ");
-                    } else {
+                }
+            } else if (this.getIntention() == Intention.GO_REGISTRY_SEPARATE) {
+                //log(this.getName()+" verifica se está perto de um cartório para divorciar");
+                Registry registry = this.lookForRegistry(matrix);
+                if (registry == null) {
+                    this.goToResgistry(matrix);
+                    //log(this.getName()+" move-se em direção ao cartório ");
+                } else {
+                    if(this.getGender() == 1) {
                         this.setNearestRegistryPath(null);
                         log(this.getName() + "," + this.getSpouse().getName() + " estão divorciados ");
                         this.divorce();
+                        this.engage(this.getInterest());
                         this.marry();
                         log(this.getName() + "," + this.getSpouse().getName() + " estão casados ");
                     }
                 }
             }
+
         }
     }
 
     public void locateNearestRegistry(Matrix matrix) {
-        ArrayList<ArrayList<Node>> paths = new ArrayList<ArrayList<Node>>();
         AStar aStar = new AStar();
         aStar.setMatrix(matrix);
 
+        if(this.getVisitedRegistries().size() == matrix.getRegistries().size()){
+            this.setVisitedRegistries(new ArrayList<>());
+        }
+
+        Registry chooseRegistry = null;
+        ArrayList<Node> shortestPath = new ArrayList<>();
         for (Registry registry : matrix.getRegistries()) {
+            if (this.inVisitedRegistries(registry))
+                continue;
+
             aStar.setOrigin(new Node(this.getX(), this.getY()));
             aStar.setDestination(new Node(registry.getX(), registry.getY()));
             ArrayList<Node> path = aStar.findPath();
-            paths.add(path);
-        }
 
-        ArrayList<Node> shortestPath = paths.get(0);
-        for (int i = 1; i < paths.size(); i++) {
-            if (paths.get(i).size() < shortestPath.size()) {
-                shortestPath = paths.get(i);
+            if (shortestPath.size() == 0 || path.size() < shortestPath.size()) {
+                shortestPath = path;
+                chooseRegistry = registry;
             }
         }
 
-        Stack<Node> nearestRegistryPath = new Stack<Node>();
+        this.getVisitedRegistries().add(chooseRegistry);
 
-        for (int i = shortestPath.size() - 1; i >= 0; i--) {
-            nearestRegistryPath.push(shortestPath.get(i));
+        if(shortestPath.size() == 1 && shortestPath.get(0).getX() == this.getX() && shortestPath.get(1).getX() == this.getX()){
+            this.setNearestRegistryPath(null);
+        }else {
+            Stack<Node> nearestRegistryPath = new Stack<Node>();
+            for (int i = shortestPath.size() - 1; i >= 1; i--) {
+                nearestRegistryPath.push(shortestPath.get(i));
+            }
+            this.setNearestRegistryPath(nearestRegistryPath);
         }
 
-        this.setNearestRegistryPath(nearestRegistryPath);
+        if(this.getFiance() != null){
+            this.getFiance().setNearestRegistryPath(this.getNearestRegistryPath());
+        }else if(this.getInterest() != null){
+            this.getInterest().setNearestRegistryPath(this.getNearestRegistryPath());
+        }
     }
 
     public void goToResgistry(Matrix matrix) {
-        if (this.getNearestRegistryPath() == null) {
+        if (this.getNearestRegistryPath() == null || this.getNearestRegistryPath().size() == 0) {
             this.locateNearestRegistry(matrix);
         }
 
@@ -292,7 +325,7 @@ public class Agent extends Part {
                 Part part = m.get(y).get(x);
                 if (part.getClass().equals(this.getClass())) {
                     Agent agent = (Agent) part;
-                    if (agent.getGender() == 0) {
+                    if (agent.getGender() == 0 && !this.wasRejected(agent)) {
                         agents.add(agent);
                     }
                 }
@@ -315,6 +348,24 @@ public class Agent extends Part {
         }
 
         return favoriteAgent;
+    }
+
+    public boolean wasRejected(Agent agent){
+        for(Agent a : this.getRejectedBy()){
+            if(a.getName().equals(agent.getName()))
+                return true;
+        }
+
+        return false;
+    }
+
+    public boolean inVisitedRegistries(Registry registry){
+        for(Registry r : this.getVisitedRegistries()){
+            if(r.getName().equals(registry.getName()))
+                return true;
+        }
+
+        return false;
     }
 
     public boolean isAgentCloser(Matrix matrix, Agent agent) {
@@ -467,6 +518,37 @@ public class Agent extends Part {
         this.setY(y);
     }
 
+    public boolean isInterestedIn(Agent agent) {
+        int currentFiancePriority = Integer.MAX_VALUE;
+        int newFiancePriority = Integer.MAX_VALUE;
+
+        for (Integer key : this.getPreference().keySet()) {
+            if (this.getFiance() != null && this.getPreference().get(key).getName().equals(this.getFiance().getName())) {
+                currentFiancePriority = key;
+            } else if (this.getPreference().get(key).getName().equals(agent.getName())) {
+                newFiancePriority = key;
+            }
+        }
+
+        if (newFiancePriority < currentFiancePriority)
+            return true;
+
+        agent.getRejectedBy().add(this);
+        return false;
+    }
+
+    public boolean isHighPriority(Agent agent) {
+        for (Integer key : this.getPreference().keySet()) {
+            if (key == 1) {
+                Agent preference = this.getPreference().get(key);
+                String preferenceName = preference.getName();
+                return preferenceName.equals(agent.getName());
+                //return preference.getName().equals(agent.getName());
+            }
+        }
+        return false;
+    }
+
     public void engage(Agent agent) {
         if (agent.getFiance() == null) {
 
@@ -522,41 +604,7 @@ public class Agent extends Part {
         }
     }
 
-    public boolean isInterestedIn(Agent agent) {
-        int currentFiancePriority = Integer.MAX_VALUE;
-        int newFiancePriority = Integer.MAX_VALUE;
-
-        for (Integer key : this.getPreference().keySet()) {
-            if (this.getFiance() != null && this.getPreference().get(key).getName().equals(this.getFiance().getName())) {
-                currentFiancePriority = key;
-            } else if (this.getPreference().get(key).getName().equals(agent.getName())) {
-                newFiancePriority = key;
-            }
-        }
-
-        if (newFiancePriority < currentFiancePriority)
-            return true;
-
-        return false;
-    }
-
-    public boolean isHighPriority(Agent agent) {
-        for (Integer key : this.getPreference().keySet()) {
-            if (key == 1) {
-                Agent preference = this.getPreference().get(key);
-                String preferenceName = preference.getName();
-                return preferenceName.equals(agent.getName());
-                //return preference.getName().equals(agent.getName());
-            }
-        }
-        return false;
-    }
-
-    /**
-     * TODO make them walk toghter
-     */
     public void marry() {
-
         if (this.isHighPriority(this.getFiance()))
             this.setStatus(Status.HAPPY_MARRIAGE);
         else
@@ -566,7 +614,6 @@ public class Agent extends Part {
         this.getFiance().setSpouse(this);
         this.getFiance().setInterest(null);
         this.getFiance().setIntention(null);
-        this.getFiance().setStatus(Status.HAPPY_MARRIAGE);
 
         if (this.getFiance().isHighPriority(this))
             this.getFiance().setStatus(Status.HAPPY_MARRIAGE);
@@ -577,21 +624,30 @@ public class Agent extends Part {
         this.setFiance(null);
         this.setInterest(null);
         this.setIntention(null);
+
     }
 
     public void divorce() {
-        this.getInterest().getSpouse().setFiance(this);
-        this.getInterest().getSpouse().setSpouse(null);
-        this.getInterest().getSpouse().setIntention(null);
-        this.getInterest().getSpouse().setStatus(Status.SINGLE);
+        if(this.getInterest().getSpouse() != null) {
+            this.getInterest().getSpouse().setSpouse(null);
+            this.getInterest().getSpouse().setIntention(null);
+            this.getInterest().getSpouse().setStatus(Status.SINGLE);
 
-        this.getInterest().setFiance(this);
-        this.getInterest().setIntention(null);
-        this.getInterest().setStatus(Status.SINGLE);
+            this.getInterest().setSpouse(null);
+            this.getInterest().setIntention(null);
+            this.getInterest().setStatus(Status.SINGLE);
+        }
 
-        this.getInterest().getSpouse().setInterest(this);
-        this.getInterest().setSpouse(null);
-        this.getInterest().setInterest(this);
+        if(this.getSpouse() != null){
+            this.getSpouse().setSpouse(null);
+            this.getSpouse().setIntention(null);
+            this.getSpouse().setStatus(Status.SINGLE);
+
+            this.setSpouse(null);
+            this.setIntention(null);
+            this.setStatus(Status.SINGLE);
+        }
+
     }
 
     public static Agent findAgentByName(ArrayList<Agent> agents, String name) {

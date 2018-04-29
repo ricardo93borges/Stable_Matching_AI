@@ -73,14 +73,15 @@ public class AStar {
                 double new_cost = 0.0;
                 double priority = this.heuristic(new_cost, next);
 
-                if(!cost_so_far.containsKey(next.getId()) || priority < d){
-                    d = priority;
+                if(!cost_so_far.containsKey(next.getId())){
+                    //d = priority;
                     cost_so_far.put(next.getId(), new_cost);
 
-                    if(!ids.contains(next.getId())) {
+                    frontier.add(next);
+                    /*if(!ids.contains(next.getId())) {
                         frontier.add(next);
                         ids.add(next.getId());
-                    }
+                    }*/
 
                     if(!came_from.containsKey(next.getId())) {
                         came_from.put(next.getId(), current);

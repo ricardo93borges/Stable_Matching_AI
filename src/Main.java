@@ -10,6 +10,8 @@ import java.util.Random;
 
 public class Main {
 
+    public static int cycles = 0;
+
     public static void main(String[] args){
         Reader reader = new Reader();
 
@@ -39,41 +41,23 @@ public class Main {
         printMatrix(matrix);
 
         run(matrix,agents);
+    }
 
-/*
-        Agent a1 = agents.get(0);
-        Agent a2 = agents.get(3);
-        Agent a3 = agents.get(1);
-        a1.engage(a2);
-        a3.engage(a2);
-*/
-
-        //agents.get(0).locateNearestRegistry(matrix);
-/*
-        AStar aStar = new AStar(new Node(19,7), new Node(5,5), matrix);
-        ArrayList<Node> shortestPath = aStar.findPath();
-        System.out.println("end");
-*/
-
-        /*matrix.drawShortestPath(shortestPath);
-        printMatrix(matrix);*/
-
-        /*while(true) {
-            for (Agent agent : agents) {
-                agent.walk(matrix);
-            }
-            printMatrix(matrix);
-        }*/
-
-        //run(matrix,agents,registries);
+    public static void printAgentsStatus(ArrayList<Agent> agents){
+        for (Agent agent : agents) {
+            System.out.print(agent.getName()+":"+agent.getStatus()+" | ");
+        }
+        System.out.println();
     }
 
     public static boolean existSingleAgent(ArrayList<Agent> agents){
+        printAgentsStatus(agents);
+        cycles++;
         for (Agent agent : agents) {
             if(agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.HAPPY_ENGAGEMENT || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT)
                 return true;
         }
-        System.out.println("Todos os agentes estão casados");
+        System.out.println("Todos os agentes estão casados. \n "+cycles+" ciclos");
         return false;
     }
 
@@ -150,10 +134,10 @@ public class Main {
     public static ArrayList<Wall> instantiateWalls(){
         ArrayList<Wall> walls = new ArrayList<Wall>();
 
-        walls.add(new Wall(4,4,1,11));
-        walls.add(new Wall(8,9,1,10));
-        walls.add(new Wall(13,6,1,9));
-        walls.add(new Wall(17,3,1,11));
+        walls.add(new Wall(2,4,1,11));
+        walls.add(new Wall(6,9,1,10));
+        walls.add(new Wall(11,6,1,9));
+        walls.add(new Wall(15,4,1,11));
 
         return walls;
     }
