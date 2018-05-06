@@ -16,7 +16,7 @@ public class Main {
         Reader reader = new Reader();
 
         //Read
-        ArrayList<String[]> data = reader.readCsv("data.csv", " ");
+        ArrayList<String[]> data = reader.readCsv("files/10Casais.txt", " ");
 
         //Get couples and registries
         String[] line = data.get(0);
@@ -40,33 +40,50 @@ public class Main {
 
         printMatrix(matrix);
 
-        run(matrix,agents);
+        try {
+            run(matrix,agents);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void printAgentsStatus(ArrayList<Agent> agents){
-        for (Agent agent : agents) {
-            System.out.print(agent.getName()+":"+agent.getStatus()+" | ");
+        for(Agent agent : agents){
+            if(agent.getGender() == 1) {
+                if (agent.getStatus() == Status.SINGLE) {
+                    System.out.println(agent.getName() + " Está solteiro ");
+                } else if (agent.getFiance() != null && (agent.getStatus() == Status.HAPPY_ENGAGEMENT || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT)) {
+                    System.out.println(agent.getName() + " Está noivo de " + agent.getFiance().getName());
+                } else if (agent.getSpouse() != null && (agent.getStatus() == Status.HAPPY_MARRIAGE || agent.getStatus() == Status.UNHAPPY_MARRIAGE)) {
+                    System.out.println(agent.getName() + " Está casado com " + agent.getSpouse().getName());
+                }
+            }
         }
-        System.out.println();
     }
 
     public static boolean existSingleAgent(ArrayList<Agent> agents){
+        System.out.println("Ciclo: "+cycles);
         printAgentsStatus(agents);
         cycles++;
         for (Agent agent : agents) {
             if(agent.getStatus() == Status.SINGLE || agent.getStatus() == Status.HAPPY_ENGAGEMENT || agent.getStatus() == Status.UNHAPPY_ENGAGEMENT)
                 return true;
         }
-        System.out.println("Todos os agentes estão casados. \n "+cycles+" ciclos");
+        System.out.println("Todos os agentes estão casados. \n"+cycles+" ciclos");
+        for (Agent agent : agents)
+            System.out.println(agent.getName()+":"+agent.getStatus());
         return false;
     }
 
-    public static void run(Matrix matrix, ArrayList<Agent> agents){
+    public static void run(Matrix matrix, ArrayList<Agent> agents) throws InterruptedException {
         while (existSingleAgent(agents)) {
             for (Agent agent : agents) {
                 agent.act(matrix);
+                Thread.sleep(30);
             }
             printMatrix(matrix);
+            //Thread.sleep(500);
         }
     }
 
@@ -80,13 +97,13 @@ public class Main {
         ArrayList<Agent> agents = new ArrayList<Agent>();
         Random random = new Random();
         String prefix = "H";
-        int c = 1;
-        int n = 1;
+        int c = 0;
+        int n = 0;
         int gender = 1;
 
         int condition = couplesQuantity == 1 ? 2 : couplesQuantity*2;
         int x,y;
-        while (c <= condition){
+        while (c < condition){
 
             x = random.nextInt(matrix.getLines());
             y = random.nextInt(matrix.getColumns());
@@ -99,9 +116,9 @@ public class Main {
             agents.add(new Agent(prefix+n,x,y, gender));
             c++;
             n++;
-            if(c > couplesQuantity && prefix.equals("H")) {
+            if(c >= couplesQuantity && prefix.equals("H")) {
                 gender = 0;
-                n = 1;
+                n = 0;
                 prefix = "M";
             }
         }
@@ -110,16 +127,24 @@ public class Main {
         String prefixAgent = "H";
         String prefixPreference = "M";
         for(int i = 1; i<data.size(); i++){
+
+            String[] l = data.get(i);
+
+            if(l[0].equals(""))
+                continue;
+
             if(i > couplesQuantity){
                 prefixAgent = "M";
                 prefixPreference = "H";
             }
 
-            String[] l = data.get(i);
+
             Agent agent = Agent.findAgentByName(agents, prefixAgent+l[0]);
             HashMap<Integer, Agent> preference = new HashMap<Integer, Agent>();
 
             for(int j=l.length-1; j >= 1; j--){
+                if(l[j].equals(""))
+                    continue;
                 Agent a = Agent.findAgentByName(agents, prefixPreference+l[j]);
                 preference.put(j, a);
             }
@@ -151,7 +176,7 @@ public class Main {
         int i = 1;
         while (c <= registriesQuantity){
             Wall wall = walls.get(w);
-            registries.add(new Registry("R"+c, wall.getX()+i, wall.getY()+1));
+            registries.add(new Registry("R"+c, wall.getX()+1, wall.getY()+i*2));
 
             c++;
             w++;
